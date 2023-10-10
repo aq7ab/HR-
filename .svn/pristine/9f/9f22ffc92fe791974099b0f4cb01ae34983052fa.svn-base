@@ -1,0 +1,171 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>My JSP 'resume-list.jsp' starting page</title>
+    <link rel="stylesheet"
+          href="../../../css/table.css" type="text/css">
+    <link rel="stylesheet"
+          href="../../../css/cwcalendar.css" type="text/css">
+    <script type="text/javascript"
+            src="../../../javascript/comm/comm.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/list.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/calendar-ch.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/locate.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/select.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #F1F2F7;
+        }
+
+        .TD_STYLE1 {
+            background-color: #c0c4cc;
+            padding-left: 27px;
+        }
+
+        .TD_STYLE2 {
+            background-color: #F1F2F7;
+        }
+
+        .INPUT_STYLE2 {
+            background-color: #F1F2F7;
+        }
+
+        .INPUT_STYLE1 {
+            background-color: #F1F2F7;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        @{ string str = ViewBag.str;}
+        <table width="100%">
+            <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                <el-breadcrumb-item :to="{ path: '/' }">人力资源管理</el-breadcrumb-item>
+                <el-breadcrumb-item><a href="#">招聘管理</a></el-breadcrumb-item>
+                <el-breadcrumb-item><a href="#">录用管理</a></el-breadcrumb-item>
+                <el-breadcrumb-item>录用审批</el-breadcrumb-item>
+            </el-breadcrumb>
+            <tr>
+                <td align="right">
+                    <input type="button" value="返回" class="BUTTON_STYLE1" onclick="history.back();">
+                </td>
+            </tr>
+        </table>
+        <el-table :data="table"
+                  stripe
+                  style="width: 100%">
+            <el-table-column prop="human_name"
+                             label="姓名">
+            </el-table-column>
+            <el-table-column prop="human_sex"
+                             label="性别">
+            </el-table-column>
+            <el-table-column prop="human_age"
+                             label="年龄">
+            </el-table-column>
+            <el-table-column prop="human_major_kind_name"
+                             label="职位类别">
+            </el-table-column>
+            <el-table-column prop="human_major_name"
+                             label="职位名称">
+            </el-table-column>
+            <el-table-column prop="human_college"
+                             label="毕业院校">
+            </el-table-column>
+            <el-table-column prop="human_educated_major"
+                             label="学历专业">
+            </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button size="mini"
+                               v-on:click="xg(scope.row.res_id)"
+                               style="color: #fff; background: #303133; ">审批</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-pagination v-on:size-change="handleSizeChange"
+                       v-on:current-change="handleCurrentChange"
+                       :current-page="currentPage"
+                       :page-sizes="[3, 6, 9, 12]"
+                       :page-size="pageSize"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="row">
+        </el-pagination>
+        <p>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                table: [],
+                currentPage: 1,
+                pageSize: 3,
+                row: 1,
+                tt: "",
+            },
+            methods: {
+                fill: function () {
+                    axios.get('/Recruit/ERFenYe', {
+                        params: {
+                            CurrentPage: this.currentPage,
+                            PageSize: this.pageSize,
+                            tj: "interview_status=1 and pass_checkComment = '通过' and pass_passComment = ''"
+                        }
+                    })
+                        .then(res => {
+                            this.table = res.data.List;
+                            this.row = res.data.Rows;
+                            console.log(this.table)
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                },
+                handleSizeChange: function (size) {
+
+                    this.pageSize = size;
+                    this.currentPage = 1;
+                    this.fill();
+                },
+                handleCurrentChange: function (cpage) {
+                    this.currentPage = cpage;
+                    this.fill();
+                },
+                xg: function (id) {
+                    console.log(id);
+                    location.href = '/Interview/Check?ii=' + id + ''
+                },
+            },
+            mounted: function () {
+                this.fill();
+            },
+        })
+    </script>
+</body>
+</html>

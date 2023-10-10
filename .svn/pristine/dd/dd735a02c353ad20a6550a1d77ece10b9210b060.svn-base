@@ -1,0 +1,72 @@
+﻿using Dapper;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAO
+{
+    //三级
+    public class CFTKDAO
+    {
+        string conStr = "Data Source=.;Initial Catalog=HR_DB;Integrated Security=True";
+        /// <summary>
+        /// 查询全部
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<CFTK>> ThirdSelectAsync()
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                string sql = "select * from [dbo].[config_file_third_kind]";
+                return (List<CFTK>)await connection.QueryAsync<CFTK>(sql);
+            }
+        }
+
+        /// <summary>
+        /// 根据ID查全部
+        /// </summary>
+        /// <returns></returns>
+        public async Task<CFTK> ThirdSelectIDAsync(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                string sql = $"select * from [dbo].[config_file_third_kind] where ftk_id='{id}'";
+                return await connection.QueryFirstAsync<CFTK>(sql);
+            }
+        }
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="fFK"></param>
+        /// <returns></returns>
+        public async Task<int> ThirdUpdateAsync(CFTK fFK)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+
+                string sql = $@"update [dbo].[config_file_third_kind] set [third_kind_sale_id]='{fFK.Third_kind_sale_id}',[third_kind_is_retail]='{fFK.Third_kind_is_retail}' where [ftk_id]='{fFK.Ftk_id}'";
+                return await connection.ExecuteAsync(sql);
+            }
+        }
+        /// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="fFK"></param>
+        /// <returns></returns>
+        public async Task<int> ThirdInsertAsync(CFTK fFK)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+
+                string sql = $@"";
+                return await connection.ExecuteAsync(sql);
+            }
+        }
+
+    }
+}

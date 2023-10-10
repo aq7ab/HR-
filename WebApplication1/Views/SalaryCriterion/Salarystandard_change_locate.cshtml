@@ -1,0 +1,156 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../css/table.css" type="text/css">
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../javascript/calendar/calendar-win2k-cold-1.css">
+    <script type="text/javascript" src="../../javascript/calendar/cal.js"></script>
+    <script type="text/javascript" src="../../javascript/comm/comm.js"></script>
+    <script type="text/javascript" src="../../javascript/comm/list.js"></script>
+    <script type="text/javascript" src="../../javascript/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="../../javascript/calendar-ch.js"></script>
+    <script type="text/javascript" src="../../javascript/comm/time.js"></script>
+    <link rel="stylesheet" href="../../css/cwcalendar.css" type="text/css">
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+
+    <title>薪酬标准查询</title>
+    <style type="text/css">
+        body {
+            background-color: #F1F2F7;
+        }
+        .TD_STYLE1 {
+            background-color: #c0c4cc;
+            padding-left: 27px;
+        }
+
+        .TD_STYLE2 {
+            background-color: #F1F2F7;
+        }
+        .INPUT_STYLE2 {
+            background-color: #F1F2F7;
+        }
+        .INPUT_STYLE1 {
+            background-color: #F1F2F7;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <form>
+            <input type="hidden" name="page.startPage" value="0">
+            <table width="100%">
+
+                <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                    <el-breadcrumb-item :to="{ path: '/' }">人力资源管理</el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">薪酬标准管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item>薪酬标准变更</el-breadcrumb-item>
+                </el-breadcrumb>
+                <tr>
+                    <td>
+                        <div align="right">
+                            <input type="button" v-on:click="cx()" value="查询" class="BUTTON_STYLE1" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE2">
+                <tr>
+                    <td width="20%" class="TD_STYLE1">
+                        请输入薪酬标准编号
+                    </td>
+                    <td class="TD_STYLE2">
+                        <input type="text" name="standard.standardId" value="" id="bh"
+                               class="INPUT_STYLE1">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        请输入关键字
+                    </td>
+                    <td class="TD_STYLE2">
+                        <input type="text" name="utilbean.primarKey" class="INPUT_STYLE1" id="gjz">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        请输入建档时间
+                    </td>
+                    <td width="84%" class="TD_STYLE2">
+                        <input name="utilbean.startDate" onclick="aa('utilbean.startDate')" type="text" class="INPUT_STYLE2" id="date_start" style="width:24% " value="" size="30">
+                        至 <input type="text" name="utilbean.endDate" onclick="aa('utilbean.endDate')" value="" style="width:24% " class="INPUT_STYLE2" id="date_end">
+                        （YYYY-MM-DD）
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+    </div>
+
+</body>
+
+</html>
+<script>
+    let str = "check_status=0";
+    var vm = new Vue({
+        el: "#app",
+        data: {
+
+
+        },
+        methods: {
+
+            cx() {
+
+                var standardId = document.getElementById("bh").value;
+                var primarKey = document.getElementById("gjz").value;
+                var date_start = document.getElementById("date_start").value;
+                var date_end = document.getElementById("date_end").value;
+                //if (standardId.length <= 0 && primarKey.length <= 0 && date_start.length <= 0 && date_end.length <= 0) {
+
+                //    this.$message({
+                //        type: 'info',
+                //        message: '您没有输入查询条件'
+                //    });
+
+                //    return;
+                //}
+                str = "check_status=0";
+                if (standardId.length > 0) {
+                    str += "and standard_id like '%" + standardId + "%'";
+                }
+                if (primarKey.length > 0) {
+                    str += "and standard_id like '%" + primarKey + "%' and check_status=1 or designer like '%" + primarKey + "%'and check_status=1 or checker like '%" + primarKey + "%'and check_status=1 or changer like '%" + primarKey + "%'and check_status=1";
+                }
+                if (date_start!="" && date_end !="") {
+                    str += "and regist_time between '" + date_start + " 'and '" + date_end + "'";
+                }
+
+                location.href = '/SalaryCriterion/Bian?str=' + str;
+
+
+
+            },
+
+
+        },
+        mounted: function () {
+
+        },
+
+    })
+</script>
+

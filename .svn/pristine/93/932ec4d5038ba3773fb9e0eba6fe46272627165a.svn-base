@@ -1,0 +1,55 @@
+﻿using Dapper;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAO
+{
+    public class ConfigPublicCharDao
+    {
+        //连接字符串
+        string str = "Data Source=.;Initial Catalog=HR_DB;Integrated Security=True";
+        /// <summary>
+        /// 查询公共属性设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<ConfigPublicChar>> CPCSelectAsync()
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = "select * from config_public_char";
+                return await con.QueryAsync<ConfigPublicChar>(sql);
+            }
+        }
+        /// <summary>
+        /// 添加公共属性设置
+        /// </summary>
+        /// <param name="cp"></param>
+        /// <returns></returns>
+        public async Task<int> CPCInsertAsync(ConfigPublicChar cp)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"insert into config_public_char(attribute_kind,attribute_name) values('{cp.attribute_kind}','{cp.attribute_name}')";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        /// <summary>
+        /// 删除公共属性设置
+        /// </summary>
+        /// <param name="cp"></param>
+        /// <returns></returns>
+        public async Task<int> CPCDeleteAsync(ConfigPublicChar cp)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"delete from config_public_char where pbc_id = '{cp.pbc_id}'";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+    }
+}

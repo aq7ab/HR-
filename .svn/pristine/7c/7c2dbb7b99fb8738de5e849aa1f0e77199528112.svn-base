@@ -1,0 +1,178 @@
+﻿
+@{
+    Layout = null;
+   List< CFFK> cs = ViewBag.s;
+}
+@using Models
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet"
+          href="../../css/table.css" type="text/css">
+    <script type="text/javascript"
+            src="../../javascript/comm/comm.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #D4F8D4;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <el-form ref="form" :model="ruleForm" :rules="rules">
+
+            <table width="100%">
+                
+                <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                    <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">客户化设置</a></el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">人力资源档案管理设置</a></el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="/Cilent/SecondKind">II级机构设置</a></el-breadcrumb-item>
+                    <el-breadcrumb-item>II级机构添加</el-breadcrumb-item>
+                </el-breadcrumb>
+                <tr>
+                    <td align="right">
+                        <input type="button" value="提交" v-on:click="tj" class="BUTTON_STYLE1">
+                        <input type="button" value="返回" class="BUTTON_STYLE1"
+                               onclick="history.back();">
+                    </td>
+                </tr>
+            </table>
+
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td width="19%" >
+                        I级机构名称
+                    </td>
+                    <td width="81%" >
+                        <el-select v-model="value"  placeholder="请选择" >
+                           @foreach (CFFK c in cs) { 
+                               <el-option  value="@c.First_kind_id" label='@c.First_kind_name'>@c.First_kind_name</el-option>
+                           }
+                        </el-select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="19%">
+                        II级机构编号
+                    </td>
+
+                    <td width="81%">
+                       
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        II级机构名称
+                    </td>
+                    <td>
+                        <el-form-item prop="name">
+                            <el-input v-model="ruleForm.name"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        薪酬发放责任人编号（多个编号之间请用"半角逗号"加"一个空格"隔开，如", "）
+                    </td>
+                    <td>
+                        <el-form-item prop="fzr">
+                            <el-input v-model="ruleForm.fzr" type="textarea" rows="3"></el-input>
+                        </el-form-item>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        销售责任人编号（多个编号之间请用"半角逗号"加"一个空格"隔开，如", "）
+                    </td>
+                    <td>
+                        <el-form-item prop="xsr">
+                            <el-input v-model="ruleForm.xsr" type="textarea" rows="3" ></el-input>
+                        </el-form-item>
+
+                    </td>
+                </tr>
+            </table>
+
+        </el-form>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            ruleForm: {
+                bh: "",
+                name: "",
+                fzr: "",
+                xsr: ""
+            },
+            options: [],
+            value: "",
+
+            rules: {
+
+                name: [
+                    { required: true, message: ' II级机构名称不能为空', trigger: 'blur' }
+                ],
+                fzr: [
+                    { required: true, message: ' 薪酬发放责任人编号不能为空', trigger: 'blur' }
+                ],
+                xsr: [
+                    { required: true, message: ' 销售责任人编号不能为空', trigger: 'blur' }
+                ],
+            },
+        },
+        methods: {
+
+
+
+            //添加
+            tj: function () {
+                var t = this;
+
+                t.$refs.form.validate(valid => {
+                    if (valid) {
+                        axios.get('/Cilent/SecondKindInsert1', {
+                            params: {
+
+                                first_kind_id: t.value,
+                                second_kind_name: t.ruleForm.name,
+                                second_salary_id: t.ruleForm.fzr,
+                                second_sale_id: t.ruleForm.xsr,
+
+                            }
+                        })
+                            .then(res => {
+                                if (res.data > 0) {
+                                    alert("添加成功！")
+                                    location.href = '/Cilent/SecondKind'
+                                }
+                            }).catch(err => {
+                                console.log(err);
+                            })
+                    } else {
+                        alert("请输入完整信息！")
+                    }
+                })
+
+            },
+
+
+        },
+
+
+    })
+
+</script>

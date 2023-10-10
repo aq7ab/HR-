@@ -1,0 +1,463 @@
+﻿
+@{
+    Layout = null;
+    List<ConfigMajor> cm = ViewBag.s;
+    List<ConfigMajorKind> cc = ViewBag.ss;
+}
+@using Models
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet"
+          href="../../../css/table.css" type="text/css">
+    <link rel="stylesheet"
+          href="../../../css/cwcalendar.css" type="text/css">
+    <script type="text/javascript"
+            src="../../../javascript/comm/comm.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/list.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/calendar-ch.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/locate.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/select.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #D4F8D4;
+        }
+
+        .TD_STYLE2 {
+            background-color: #D4F8D4 !important;
+        }
+
+        .TD_STYLE1 {
+            background-color: #D4F8D4 !important;
+        }
+
+        .TABLE_STYLE1 {
+            background-color: #D4F8D4 !important;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = check;
+        function tick() {
+            var now = new Date();
+            var hours, minutes, seconds, noon;
+            var intHours, intMinutes, intSeconds;
+            intHours = now.getHours();
+            intMinutes = now.getMinutes();
+            intSeconds = now.getSeconds();
+            if (intHours < 24) {
+                hours = intHours + ":";
+                noon = "A.M.";
+            } else {
+                intHours = intHours - 24;
+                hours = intHours + ":";
+                noon = "P.M.";
+            }
+            if (intMinutes < 10) {
+                minutes = "0" + intMinutes + ":";
+            } else {
+                minutes = intMinutes + ":";
+            }
+            if (intSeconds < 10) {
+                seconds = "0" + intSeconds + " ";
+            } else {
+                seconds = intSeconds + " ";
+            }
+            timeString = hours + minutes + seconds;
+            var now = new Date();
+            document.getElementById("nowTime").value = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " " + timeString;
+            window.setTimeout("tick();", 1000);
+        }
+
+        //load事件
+        function check() {
+            //获得系统当前时间的方法
+            tick();
+        }
+    </script>
+    <script type="text/javascript">
+        function mysubmit() {
+            if (document.getElementById("name").value == "") {
+                alert("请填写姓名");
+                return false;
+            }
+            if (document.getElementById("phone").value == "") {
+                alert("请填写电话");
+                return false;
+            } else if (isNaN(document.getElementById("phone").value)) {
+                alert("电话号码请填写数字");
+                return false;
+            }
+            if (document.getElementById("card").value == "") {
+                alert("请填写身份证号码");
+                return false;
+            }
+            if (document.getElementById("birthday").value != "") {
+                var str = document.getElementById("birthday").value;
+                var r = str.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
+                if (r == null) {
+                    alert("请输入正确的日期格式：yyyy-MM-dd");
+                    return false;
+                }
+            }
+            if (document.getElementById("email").value != "") {
+                var email = document.getElementById("email").value;
+                if (email.indexOf(".") <= -1 || email.indexOf("") <= -1) {
+                    alert("Email格式不匹配，如：123.com");
+                    return false;
+                }
+            }
+            if (document.getElementById("humanHomephone").value != "") {
+                if (isNaN(document.getElementById("humanHomephone").value)) {
+                    alert("家庭电话请填写数字");
+                    return false;
+                }
+            }
+            if (document.getElementById("humanMobilephone").value != "") {
+                if (isNaN(document.getElementById("humanMobilephone").value)) {
+                    alert("手机请填写数字");
+                    return false;
+                }
+            }
+            if (document.getElementById("humanAge").value != "") {
+                if (isNaN(document.getElementById("humanAge").value)) {
+                    alert("年龄请填写数字");
+                    return false;
+                }
+            }
+            if (document.getElementById("demandSalaryStandard").value != "") {
+                if (isNaN(document.getElementById("demandSalaryStandard").value)) {
+                    alert("年龄请填写数字");
+                    return false;
+                }
+            }
+            document.fm.submit();
+        }
+    </script>
+</head>
+<body>
+    <div id="app">
+        <el-form ref="form" :model="engageResume" :rules="rules">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <font color="black">您正在做的业务是：人力资源--招聘管理--简历管理--简历登记 </font>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <input type="submit" value="提交" class="BUTTON_STYLE1" v-on:click="tj" />
+                        <input type="reset" value="清除" class="BUTTON_STYLE1" />
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td class="TD_STYLE1">
+                        职位分类
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-select v-model="valuemkid" placeholder="--请选择--"
+                                   name="engageResume.humanMajorKindName" id="majorKindId" class="SELECT_STYLE1">
+                            @foreach (ConfigMajorKind mk in cc)
+                            {
+                                <el-option value="@mk.major_kind_name" label='@mk.major_kind_name'>@mk.major_kind_name</el-option>
+                            }
+                        </el-select>
+                    </td>
+                    <td class="TD_STYLE1">
+                        职位名称
+                    </td>
+                    <td class="TD_STYLE2" width="20%">
+                        <el-select v-model="valuemid" placeholder="--请选择--"
+                                   name="engageResume.humanMajorName" id="majorId" class="SELECT_STYLE1">
+                            @foreach (ConfigMajor cmm in cm)
+                            {
+                                <el-option value="@cmm.major_name" label='@cmm.major_name'>@cmm.major_name</el-option>
+                            }
+                        </el-select>
+                    </td>
+                    <td width="11%" class="TD_STYLE1">
+                        招聘类型
+                    </td>
+                    <td class="TD_STYLE2" colspan="2">
+                        <el-select v-model="engageResume.engageType">
+                            <el-option v-for="item in options1"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </td>
+                    <td rowspan="6">
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        姓名
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-input type="text" v-model="engageResume.humanName" value="admin" class="INPUT_STYLE2">
+                    </td>
+                    <td class="TD_STYLE1">
+                        性别
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-select v-model="engageResume.humanSex">
+                            <el-option v-for="item in options2"
+                                       :key="item.value2"
+                                       :label="item.label2"
+                                       :value="item.value2">
+                            </el-option>
+                        </el-select>
+                    </td>
+                    <td class="TD_STYLE1">
+                        EMAIL
+                    </td>
+                    <td colspan="2" class="TD_STYLE2">
+                        <el-input type="text" v-model="engageResume.humanEmail" value="admin" class="INPUT_STYLE2">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        电话
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-input type="text" v-model="engageResume.humanTelephone" value="admin" class="INPUT_STYLE2">
+                    </td>
+                    <td class="TD_STYLE1">
+                        家庭电话
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-input type="text" v-model="engageResume.humanHomephone" id="humanHomephone" class="INPUT_STYLE2">
+                    </td>
+                    <td class="TD_STYLE1">
+                        手机
+                    </td>
+                    <td colspan="2" class="TD_STYLE2">
+                        <el-input type="text" v-model="engageResume.humanMobilephone" id="humanMobilephone" class="INPUT_STYLE2">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        住址
+                    </td>
+                    <td colspan="3" class="TD_STYLE2">
+                        <el-input type="text" v-model="engageResume.humanAddress" value="" class="INPUT_STYLE2">
+                    </td>
+                </table>
+           </el-form>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                engageResume: {
+                    humanMajorKindName: "",
+                    humanMajorName: "",
+                    engageType: "",
+                    humanName: "",
+                    humanSex: "",
+                    humanEmail: "",
+                    humanTelephone: "",
+                    humanHomephone: "",
+                    humanMobilephone: "",
+                    humanAddress: "",
+                    humanPostcode: "",
+                    humanNationality: "",
+                    humanBirthplace: "",
+                    humanBirthday: "",
+                    humanRace: "",
+                    humanReligion: "",
+                    humanParty: "",
+                    humanIdcard: "",
+                    humanAge: "",
+                    humanCollege: "",
+                    humanEducatedDegree: "",
+                    humanEducatedYears: "",
+                    humanEducatedMajor: "",
+                    demandSalaryStandard: "",
+                    registTime: "",
+                    humanSpeciality: "",
+                    humanHobby: "",
+                    humanHistoryRecords: "",
+                    remark: ""
+                },
+                valuemid: "",
+                valuemkid: "",
+                options: [],
+                options1: [{
+                    value: '社会招聘',
+                    label: '社会招聘'
+                }, {
+                    value: '校园招聘',
+                    label: '校园招聘'
+                },],
+                options2: [{
+                    value2: '男',
+                    label2: '男'
+                }, {
+                    value2: '女',
+                    label2: '女'
+                },],
+                options3: [{
+                    value3: '中国',
+                    label3: '中国'
+                }, {
+                    value3: '美国',
+                    label3: '美国'
+                },],
+                options4: [{
+                    value4: '回族',
+                    label4: '回族'
+                }, {
+                    value4: '汉族',
+                    label4: '汉族'
+                },],
+                options5: [{
+                    value5: '无',
+                    label5: '无'
+                }, {
+                    value5: '佛教',
+                    label5: '佛教'
+                }, {
+                    value5: '基督教',
+                    label5: '基督教'
+                },],
+                options6: [{
+                    value6: '群众',
+                    label6: '群众'
+                }, {
+                    value6: '党员',
+                    label6: '党员'
+                },],
+                options7: [{
+                    value7: '高中',
+                    label7: '高中'
+                }, {
+                    value7: '本科',
+                    label7: '本科'
+                }, {
+                    value7: '大专',
+                    label7: '大专'
+                },],
+                options8: [{
+                    value8: '12',
+                    label8: '12'
+                }, {
+                    value8: '9',
+                    label8: '9'
+                },],
+                options9: [{
+                    value9: '生物工程',
+                    label9: '生物工程'
+                }, {
+                    value9: '计算机',
+                    label9: '计算机'
+                },],
+                options10: [{
+                    value10: 'JAVA',
+                    label10: 'JAVA'
+                }, {
+                    value10: '数据库',
+                    label10: '数据库'
+                },],
+                options11: [{
+                    value11: '篮球',
+                    label11: '篮球'
+                }, {
+                    value11: '跳舞',
+                    label11: '跳舞'
+                },],
+                rules: {
+
+                }
+            },
+            methods: {
+                tj: function () {
+                    var t = this;
+                    var sj = document.getElementById("nowTime").value;
+                    t.$refs.form.validate(valid => {
+                        if (valid) {
+                            axios.get('/Recruit/ERAdd', {
+                                params: {
+                                    human_major_kind_name: t.valuemkid,
+                                    human_major_name: t.valuemid,
+                                    engage_type: t.engageResume.engageType,
+                                    human_name: t.engageResume.humanName,
+                                    human_sex: t.engageResume.humanSex,
+                                    human_email: t.engageResume.humanEmail,
+                                    human_telephone: t.engageResume.humanTelephone,
+                                    human_qq: t.engageResume.humanQq,
+                                    human_homephone: t.engageResume.humanHomephone,
+                                    human_mobilephone: t.engageResume.humanMobilephone,
+                                    human_address: t.engageResume.humanAddress,
+                                    human_postcode: t.engageResume.humanPostcode,
+                                    human_nationality: t.engageResume.humanNationality,
+                                    human_birthplace: t.engageResume.humanBirthplace,
+                                    human_birthday: t.engageResume.humanBirthday,
+                                    human_race: t.engageResume.humanRace,
+                                    human_religion: t.engageResume.humanReligion,
+                                    human_party: t.engageResume.humanParty,
+                                    human_id_card: t.engageResume.humanIdCard,
+                                    human_age: t.engageResume.humanAge,
+                                    human_college: t.engageResume.humanCollege,
+                                    human_educated_degree: t.engageResume.humanEducatedDegree,
+                                    human_educated_years: t.engageResume.humanEducatedYears,
+                                    human_educated_major: t.engageResume.humanEducatedMajor,
+                                    demand_salary_standard: t.engageResume.demandSalaryStandard,
+                                    regist_time: sj,
+                                    human_speciality: t.engageResume.humanSpeciality,
+                                    human_hobby: t.engageResume.humanHobby,
+                                    human_histroy_records: t.engageResume.humanHistroyRecords,
+                                    remark: t.engageResume.remark
+                                }
+                            })
+                                .then(res => {
+                                    if (res.data > 0) {
+                                        alert("添加成功！")
+                                        location.href = '/Recruit/Register'
+                                    } else {
+                                        alert("失败！")
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                        } else {
+                            alert("请填写完整信息！")
+                        }
+                    })
+                },
+            },
+            mounted: function () {
+                this.valuemid =@Html.Raw(Json.Encode(ViewBag.mc));
+                this.valuemkid=@Html.Raw(Json.Encode(ViewBag.fl));
+            }
+        })
+    </script>
+</body>
+</html>
+

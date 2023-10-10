@@ -1,0 +1,156 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../css/table.css" type="text/css" />
+    <script type="text/javascript" src="../../javascript/jquery-1.7.2.js"></script>
+
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <title>薪酬标准登记复核</title>
+    <style type="text/css">
+        body {
+            background-color: #F1F2F7;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <table width="100%">
+           
+                <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                    <el-breadcrumb-item :to="{ path: '/' }">人力资源管理</el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">薪酬标准管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item>薪酬标准登记复核</el-breadcrumb-item>
+                </el-breadcrumb>
+           
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td style="color:red">
+                    当前等待复核的薪酬标准总数:
+                    {{row}}
+                    例
+                </td>
+            </tr>
+        </table>
+
+        <el-table :data="table"
+                  stripe
+                  style="width: 100%; background-color: #96E1A0;">
+            <el-table-column prop="Standard_id"
+                             label="薪酬标准编号">
+            </el-table-column>
+            <el-table-column prop="Standard_name"
+                             label="薪酬标准名称">
+            </el-table-column>
+            <el-table-column prop="Designer"
+                             label="制定人">
+            </el-table-column>
+            <el-table-column 
+                             label="登记时间">
+                <template slot-scope="scope">
+                    {{scope.row.Regist_time | ftime }}
+                </template>
+            </el-table-column>
+            <el-table-column 
+                             label="薪酬总额">
+                <template slot-scope="scope">
+                    {{ je(scope.row.Salary_sum) }}
+                </template>
+            </el-table-column>
+            <el-table-column label="复核">
+                <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="danger"
+                               v-on:click="fu(scope.row)">复核</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-pagination v-on:size-change="handleSizeChange"
+                       v-on:current-change="handleCurrentChange"
+                       :current-page="currentPage"
+                       :page-sizes="[3, 6, 9, 12]"
+                       :page-size="pageSize"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="row">
+        </el-pagination>
+
+
+
+    </div>
+
+</body>
+</html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            table: [],
+            currentPage: 1,
+            pageSize: 3,
+            row: 1,
+        },
+        methods: {
+            je(val) {
+                return Number(val).toFixed(2);
+            },
+            fill: function () {
+                axios.get('/SalaryCriterion/FY', {
+                    params: {
+                        CurrentPage: this.currentPage,
+                        PageSize: this.pageSize,
+                        tj:"check_status=0"
+                    }
+                })
+                    .then(res => {
+                        this.table = res.data.List;
+                        this.row = res.data.Rows;
+                       
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            },
+            handleSizeChange: function (size) {
+
+                this.pageSize = size;
+                this.currentPage = 1;
+                this.fill();
+            },
+            handleCurrentChange: function (cpage) {
+                this.currentPage = cpage;
+                this.fill();
+            },
+            //复核
+            fu: function (i) {
+                location.href = '/SalaryCriterion/Fu?id=' + i.Ssd_id + '&sid=' + i.Standard_id +''
+            }
+        },
+        mounted: function () {
+            this.fill();
+        },
+    //时间格式
+        filters: {
+            ftime: function (value, spe) {
+                if (value == '/Date(-62135596800000)/') {
+                    return '空'
+                }
+                var dt = new Date(value);
+                return dt.getFullYear() + "年" + (dt.getMonth() + 1) + "月" + dt.getDate()+"日";
+            }
+        }
+    })
+</script>

@@ -1,0 +1,56 @@
+﻿using Dapper;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAO
+{
+    /// <summary>
+    /// 薪酬标准管理
+    /// </summary>
+    public class SSDAO
+    {
+        string conStr = "Data Source=.;Initial Catalog=HR_DB;Integrated Security=True";
+        /// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="sD"></param>
+        /// <returns></returns>
+        public async Task<int> SSDInsertAsync(string bh,string name,string qian,SS ss)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@standard_id", ss.Standard_id);
+                dd.Add("@standard_name", ss.Standard_name);
+                dd.Add("@item_ids",bh );
+                dd.Add("@item_names",name );
+                dd.Add("@salaries",qian );
+                dd.Add("@designer",ss.Designer );
+                dd.Add("@register",ss.Register );
+                dd.Add("@regist_time",ss.Regist_time );
+                dd.Add("@remark", ss.Remark);
+                dd.Add("@salary_sum", ss.Salary_sum);
+                
+                return await connection.ExecuteAsync("xinshiwu", dd,commandType:CommandType.StoredProcedure );
+            }
+        }
+        /// <summary>
+        /// SDD的编号
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> BhAsync()
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                string sql = $@"SELECT RIGHT(CONCAT('000000',FLOOR(RAND()* 1000000)),13)";
+                return await connection.QueryFirstAsync<string>(sql);
+            }
+        }
+    }
+}

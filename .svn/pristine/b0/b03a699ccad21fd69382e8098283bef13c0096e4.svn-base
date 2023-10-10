@@ -1,0 +1,301 @@
+﻿using DAO;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+
+namespace WebApplication1.Controllers
+{
+    public class CilentController : Controller
+    {
+        //一级机构设置
+        CFFKDAO cf = new CFFKDAO();
+        //二级机构设置
+        CFSKDAO sk=new CFSKDAO();
+
+        //职位设置
+        ConfigMajorDao cd = new ConfigMajorDao();
+        //职位分类设置
+        ConfigMajorKindDao kd = new ConfigMajorKindDao();
+        //公共属性设置
+        ConfigPublicCharDao cp = new ConfigPublicCharDao();
+        // GET: Cilent
+        /// <summary>
+        /// 打开查询一级机构设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> FirstKind()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 打开查询二级机构设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> SecondKind()
+        {
+            return View();
+        }
+       
+        /// <summary>
+        ///打开添加一级机构设置
+        /// </summary>
+        /// <returns></returns>
+
+        public async Task<ActionResult> FirstKindInsert()
+        {
+            return View();
+        }
+        /// <summary>
+        ///打开添加二级机构设置
+        /// </summary>
+        /// <returns></returns>
+
+        public async Task<ActionResult> SecondKindInsert()
+        {
+            ViewBag.s = await cf.FirstSelectAsync();
+            return View();
+        }
+
+        /// <summary>
+        /// 查询一级机构设置
+        /// </summary>
+        /// <param name="cs"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> FirstKind1(List<CFFK> cs)
+        {
+            cs = await cf.FirstSelectAsync();
+            return Json(cs, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 查询二级机构设置
+        /// </summary>
+        /// <param name="cs"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> SecondKind1(List<CFSK> cs)
+        {
+            cs = await sk.SecondSelectAsync();
+            return Json(cs, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 根据ID查询一级机构
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> FirstKindUpdate(int id)
+        {
+            ViewBag.s = await cf.FirstSelectIDAsync(id);
+            return View();
+
+        }
+        /// <summary>
+        /// 根据ID查询二级机构
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> SecondKindUpdate(int id)
+        {
+            ViewBag.s = await sk.SecondSelectIDAsync(id);
+            return View();
+
+        }
+        /// <summary>
+        /// 添加一级机构
+        /// </summary>
+        /// <param name="cFFK"></param>
+        /// <returns></returns>
+        public async Task<int> FirstKindInsert1(CFFK cFFK)
+        {
+             return await cf.FirstInsertAsync(cFFK);
+        }
+        /// <summary>
+        /// 添加二级机构
+        /// </summary>
+        /// <param name="cFFK"></param>
+        /// <returns></returns>
+        public async Task<int> SecondKindInsert1(CFSK cFFK)
+        {
+            return await sk.SecondInsertAsync(cFFK);
+        }
+        
+        /// <summary>
+        /// 修改一级机构
+        /// </summary>
+        /// <param name="cFFK"></param>
+        /// <returns></returns>
+        public async Task<int> FirstKindUpdate1(CFFK cFFK)
+        {
+            return await cf.FirstUpdateAsync(cFFK);
+          
+        }
+        /// <summary>
+        /// 修改二级机构
+        /// </summary>
+        /// <param name="cFFK"></param>
+        /// <returns></returns>
+        public async Task<int> SecondKindUpdate1(CFSK cFFK)
+        {
+            return await sk.SecondUpdateAsync(cFFK);
+            
+        }
+        /// <summary>
+        /// 删除一级机构
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<int> FirstKindDelete(int id)
+        {
+            return await cf.FirstDeleteAsync(id);
+          
+        }
+        /// <summary>
+        /// 删除二级机构
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<int> SecondKindDelete(int id)
+        {
+            return await sk.SecondDeleteAsync(id);
+
+        }
+
+        /// <summary>
+        /// 打开查询职称设置
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ProfessionDesign()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 打开查询职位设置
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Major()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 查询职位设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> MM()
+        {
+            return Json(await cd.CMSelectAsync(), JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 打开添加职位
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> MajorAdd()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 添加职位设置
+        /// </summary>
+        /// <param name="cm"></param>
+        /// <returns></returns>
+        public async Task<int> MMInsert(ConfigMajor cm)
+        {
+            return await cd.CMInsertAsync(cm);
+        }
+        /// <summary>
+        /// 根据id删除职位设置
+        /// </summary>
+        /// <param name="cm"></param>
+        /// <returns></returns>
+        public async Task<int> Delete(ConfigMajor cm)
+        {
+            return await cd.CMDeleteAsync(cm);
+        }
+        /// <summary>
+        /// 打开查询职位分类设置
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult MajorKind()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 查询职位分类设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> MK()
+        {
+            return Json(await kd.CMKSelectAsync(), JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 打开添加职位分类
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> MajorKindAdd()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 添加职位分类
+        /// </summary>
+        /// <param name="cm"></param>
+        /// <returns></returns>
+        public async Task<int> MKInsert(ConfigMajorKind cm)
+        {
+            return await kd.CMKInsertAsync(cm);
+        }
+        /// <summary>
+        /// 删除职位分类
+        /// </summary>
+        /// <param name="cm"></param>
+        /// <returns></returns>
+        public async Task<int> MKDelete(ConfigMajorKind cm)
+        {
+            return await kd.CMKDeleteAsync(cm);
+        }
+        /// <summary>
+        /// 打开查询公共属性设置
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PublicChar()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 查询公共属性设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> CPC()
+        {
+            return Json(await cp.CPCSelectAsync(), JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 打开添加公共属性设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> PublicCharAdd()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 添加公共属性设置
+        /// </summary>
+        /// <param name="cc"></param>
+        /// <returns></returns>
+        public async Task<int> CPCInsert(ConfigPublicChar cc)
+        {
+            return await cp.CPCInsertAsync(cc);
+        }
+        /// <summary>
+        /// 删除公共属性设置
+        /// </summary>
+        /// <param name="cc"></param>
+        /// <returns></returns>
+        public async Task<int> CPCDelete(ConfigPublicChar cc)
+        {
+            return await cp.CPCDeleteAsync(cc);
+        }
+    }
+}

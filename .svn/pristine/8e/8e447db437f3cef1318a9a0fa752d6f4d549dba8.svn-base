@@ -1,0 +1,509 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>My JSP 'resume-details.jsp' starting page</title>
+    <link rel="stylesheet"
+          href="../../../css/table.css" type="text/css">
+    <link rel="stylesheet"
+          href="../../../css/cwcalendar.css" type="text/css">
+    <script type="text/javascript"
+            src="../../../javascript/comm/comm.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/list.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/calendar-ch.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/locate.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/select.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #F1F2F7;
+        }
+
+        .TD_STYLE1 {
+            background-color: #c0c4cc;
+            padding-left: 27px;
+        }
+
+        .TD_STYLE2 {
+            background-color: #F1F2F7;
+        }
+
+        .INPUT_STYLE2 {
+            background-color: #F1F2F7;
+        }
+
+        .INPUT_STYLE1 {
+            background-color: #F1F2F7;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = check;
+        function tick() {
+            var now = new Date();
+            var hours, minutes, seconds, noon;
+            var intHours, intMinutes, intSeconds;
+            intHours = now.getHours();
+            intMinutes = now.getMinutes();
+            intSeconds = now.getSeconds();
+            if (intHours < 24) {
+                hours = intHours + ":";
+                noon = "A.M.";
+            } else {
+                intHours = intHours - 24;
+                hours = intHours + ":";
+                noon = "P.M.";
+            }
+            if (intMinutes < 10) {
+                minutes = "0" + intMinutes + ":";
+            } else {
+                minutes = intMinutes + ":";
+            }
+            if (intSeconds < 10) {
+                seconds = "0" + intSeconds + " ";
+            } else {
+                seconds = intSeconds + " ";
+            }
+            timeString = hours + minutes + seconds;
+            var now = new Date();
+            document.getElementById("nowTime").value = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " " + timeString;
+            window.setTimeout("tick();", 1000);
+        }
+
+        //load事件
+        function check() {
+            //获得系统当前时间的方法
+            tick();
+        }
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        @{ Models.EngageResume er = ViewBag.s;}
+        <el-form ref="form" :model="ruleForm" :rules="rules">
+            <table width="100%">
+                <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                    <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">招聘管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">简历管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">简历筛选</a></el-breadcrumb-item>
+                    <el-breadcrumb-item>有效简历详情</el-breadcrumb-item>
+                </el-breadcrumb>
+                <tr>
+                    <td align="right">
+                        <input type="button" value="返回" class="BUTTON_STYLE1"
+                               onclick=history.back();>
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td class="TD_STYLE1">
+                        职位分类
+                    </td>
+                    <td class="TD_STYLE2">
+
+                        <el-form-item prop="fl">
+                            <el-input v-model="ruleForm.fl" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        职位名称
+                    </td>
+                    <td class="TD_STYLE2" width="20%">
+                        <el-form-item prop="zw">
+                            <el-input v-model="ruleForm.zw" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td width="11%" class="TD_STYLE1">
+                        招聘类型
+                    </td>
+                    <td class="TD_STYLE2" colspan="2">
+                        <el-form-item prop="lx">
+                            <el-input v-model="ruleForm.lx" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td rowspan="6">
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        姓名
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="xm">
+                            <el-input v-model="ruleForm.xm" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        性别
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="xb">
+                            <el-input v-model="ruleForm.xb" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        EMAIL
+                    </td>
+                    <td colspan="2" class="TD_STYLE2">
+                        <el-form-item prop="yx">
+                            <el-input v-model="ruleForm.yx" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        电话
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="dh">
+                            <el-input v-model="ruleForm.dh" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        家庭电话
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="jt">
+                            <el-input v-model="ruleForm.jt" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        手机
+                    </td>
+                    <td colspan="2" class="TD_STYLE2">
+                        <el-form-item prop="sj">
+                            <el-input v-model="ruleForm.sj" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        住址
+                    </td>
+                    <td colspan="3" class="TD_STYLE2">
+                        <el-form-item prop="zz">
+                            <el-input v-model="ruleForm.zz" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                    <td class="TD_STYLE1">
+                        邮编
+                    </td>
+                    <td colspan="2" class="TD_STYLE2">
+                        <el-form-item prop="yb">
+                            <el-input v-model="ruleForm.yb" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="TD_STYLE1">
+                        国籍
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="gj">
+                            <el-input v-model="ruleForm.gj" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        出生地
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="cs">
+                            <el-input v-model="ruleForm.cs" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        生日
+                    </td>
+                    <td width="13%" colspan="2" class="TD_STYLE2">
+                        <el-form-item prop="sr">
+                            <el-input v-model="ruleForm.sr" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td width="11%" class="TD_STYLE1">
+                        民族
+                    </td>
+                    <td class="TD_STYLE2" width="14%">
+                        <el-form-item prop="mz">
+                            <el-input v-model="ruleForm.mz" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        宗教信仰
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="xy">
+                            <el-input v-model="ruleForm.xy" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        政治面貌
+                    </td>
+                    <td class="TD_STYLE2" colspan="2">
+                        <el-form-item prop="mm">
+                            <el-input v-model="ruleForm.mm" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        身份证号码
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="sf">
+                            <el-input v-model="ruleForm.sf" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        年龄
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="nl">
+                            <el-input v-model="ruleForm.nl" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        毕业院校
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="by">
+                            <el-input v-model="ruleForm.by" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                    <td class="TD_STYLE1">
+                        学历
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="xl">
+                            <el-input v-model="ruleForm.xl" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        教育年限
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="jy">
+                            <el-input v-model="ruleForm.jy" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        学历专业
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="zy">
+                            <el-input v-model="ruleForm.zy" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                    <td class="TD_STYLE1">
+                        薪酬要求
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="yq">
+                            <el-input v-model="ruleForm.yq" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        注册时间
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="zc">
+                            <el-input v-model="ruleForm.zc" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td class="TD_STYLE1">
+                        特长
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="tc">
+                            <el-input v-model="ruleForm.tc" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        爱好
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="ah">
+                            <el-input v-model="ruleForm.ah" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        推荐人
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="tj">
+                            <el-input v-model="ruleForm.tj" readonly="readonly"></el-input>
+                        </el-form-item>
+
+                    </td>
+                    <td class="TD_STYLE1">
+                        推荐时间
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="ts">
+                            <el-input v-model="ruleForm.ts" readonly="readonly"></el-input>
+                        </el-form-item>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        个人履历
+                    </td>
+                    <td colspan="7" class="TD_STYLE2">
+                        <el-form-item prop="ll">
+                            <el-input v-model="ruleForm.ll" type="textarea" rows="4" class="TEXTAREA_STYLE1" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="TD_STYLE1">
+                        备注
+                    </td>
+                    <td colspan="7" class="TD_STYLE2">
+                        <el-form-item prop="bz">
+                            <el-input v-model="ruleForm.bz" type="textarea" rows="4" class="TEXTAREA_STYLE1" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        推荐意见
+                    </td>
+                    <td colspan="7" class="TD_STYLE2">
+                        <el-form-item prop="yj">
+                            <el-input v-model="ruleForm.yj" type="textarea" rows="4" class="TEXTAREA_STYLE1" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+            </table>
+        </el-form>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                ruleForm: {
+                    fl: "",
+                    zw: "",
+                    lx: "",
+                    xm: "",
+                    xb: "",
+                    yx: "",
+                    dh: "",
+                    sj: "",
+                    zz: "",
+                    yb: "",
+                    gj: "",
+                    cs: "",
+                    sr: "",
+                    mz: "",
+                    xy: "",
+                    mm: "",
+                    sf: "",
+                    nl: "",
+                    by: "",
+                    xl: "",
+                    jy: "",
+                    zy: "",
+                    aq: "",
+                    zc: "",
+                    tc: "",
+                    ah: "",
+                    tj: "",
+                    ts: "",
+                    ll: "",
+                    bz: "",
+                    yj: "",
+                    yq: "",
+                    id: "",
+                },
+                rules: {}
+            },
+            methods: {
+                fill: function () {
+                    this.ruleForm.fl = @Html.Raw(Json.Encode(er.human_major_kind_name));
+                    this.ruleForm.zw = @Html.Raw(Json.Encode(er.human_major_name));
+                    this.ruleForm.lx = @Html.Raw(Json.Encode(er.engage_type));
+                    this.ruleForm.xm = @Html.Raw(Json.Encode(er.human_name));
+                    this.ruleForm.xb = @Html.Raw(Json.Encode(er.human_sex));
+                    this.ruleForm.yx = @Html.Raw(Json.Encode(er.human_email));
+                    this.ruleForm.jt = @Html.Raw(Json.Encode(er.human_homephone));
+                    this.ruleForm.dh = @Html.Raw(Json.Encode(er.human_telephone));
+                    this.ruleForm.sj = @Html.Raw(Json.Encode(er.human_mobilephone));
+                    this.ruleForm.zz = @Html.Raw(Json.Encode(er.human_address));
+                    this.ruleForm.yb = @Html.Raw(Json.Encode(er.human_postcode));
+                    this.ruleForm.gj = @Html.Raw(Json.Encode(er.human_nationality));
+                    this.ruleForm.cs = @Html.Raw(Json.Encode(er.human_birthplace));
+                    this.ruleForm.sr = @Html.Raw(Json.Encode(er.human_birthday));
+                    this.ruleForm.mz = @Html.Raw(Json.Encode(er.human_race));
+                    this.ruleForm.xy = @Html.Raw(Json.Encode(er.human_religion));
+                    this.ruleForm.mm = @Html.Raw(Json.Encode(er.human_party));
+                    this.ruleForm.sf = @Html.Raw(Json.Encode(er.human_idcard));
+                    this.ruleForm.nl = @Html.Raw(Json.Encode(er.human_age));
+                    this.ruleForm.by = @Html.Raw(Json.Encode(er.human_college));
+                    this.ruleForm.xl = @Html.Raw(Json.Encode(er.human_educated_degree));
+                    this.ruleForm.jy = @Html.Raw(Json.Encode(er.human_educated_years));
+                    this.ruleForm.zy = @Html.Raw(Json.Encode(er.human_educated_major));
+                    this.ruleForm.yq = @Html.Raw(Json.Encode(er.demand_salary_standard));
+                    this.ruleForm.zc = @Html.Raw(Json.Encode(er.regist_time));
+                    this.ruleForm.tc = @Html.Raw(Json.Encode(er.human_specility));
+                    this.ruleForm.ah = @Html.Raw(Json.Encode(er.human_hobby));
+                    this.ruleForm.tj = @Html.Raw(Json.Encode(er.checker));
+                    this.ruleForm.ts = @Html.Raw(Json.Encode(er.check_status));
+                    this.ruleForm.ll = @Html.Raw(Json.Encode(er.human_history_records));
+                    this.ruleForm.bz = @Html.Raw(Json.Encode(er.remark));
+                    this.ruleForm.yj = @Html.Raw(Json.Encode(er.recomandation));
+                    this.ruleForm.id = @Html.Raw(Json.Encode(er.res_id));
+                },
+            },
+            mounted: function () {
+                this.fill();
+            }
+        })
+    </script>
+</body>
+
+</html>

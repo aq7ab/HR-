@@ -1,0 +1,169 @@
+﻿
+@{
+    Layout = null;
+    List<Models.Fill> cs = ViewBag.h;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript"
+            src="../../javascript/jquery-1.7.2.js">
+    </script>
+    <link rel="stylesheet" href="../../css/table.css" type="text/css" />
+    <script type="text/javascript" src="../../javascript/comm/comm.js"></script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <title>无标题文档</title>
+    <STYLE type="text/css">
+        td {
+            text-align: center
+        }
+        body
+
+        {
+            background-color: #F1F2F7;
+        }
+        .el-button--danger {
+            color: rgb(255, 255, 255);
+            background-color: #2A3542;
+            border-color: #2A3542;
+        }
+
+            .el-button--danger:focus, .el-button--danger:hover {
+                color: rgb(255, 255, 255);
+                background-color: #2A3542;
+                border-color: #2A3542;
+            }
+    </STYLE>
+</head>
+
+<body>
+    <div id="app">
+
+        <table width="100%">
+            <tr>
+                <td colspan="2" style="text-align: left">
+
+                    <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                        <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                        <el-breadcrumb-item><a href="#">薪酬标准管理</a></el-breadcrumb-item>
+                        <el-breadcrumb-item>薪酬发放登记(负责人控制)</el-breadcrumb-item>
+                    </el-breadcrumb>
+                </td>
+            </tr>
+
+        </table>
+        <br>
+        
+        薪酬总数:{{len}}，
+        总人数:{{nn}}，基本薪酬总数:{{je(zong)}}，实发总额:{{je(shif)}}
+    <p>  &nbsp;</p>
+        <el-table :data="table"
+                  stripe
+                  style="width: 100%; background-color: #F1F2F7;">
+            <el-table-column label="序号">
+                <template slot-scope="scope">
+                    {{scope.$index+1}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="first_kind_name"
+                             label="I级机构名称">
+            </el-table-column>
+            <el-table-column v-if="this.second_kind_name!=null"
+                             prop="second_kind_name"
+                             label="II级机构名称">
+            </el-table-column>
+            <el-table-column v-if=" this.third_kind_name!=null"
+                             prop="third_kind_name"
+                             label="III级机构名称">
+            </el-table-column>
+            <el-table-column prop="Number"
+                             label="人数">
+            </el-table-column>
+            <el-table-column
+                             label="基本薪酬总额(元)">
+                <template slot-scope="scope">
+                    {{ je(scope.row.salary_sum) }}
+                </template>
+            </el-table-column>
+            
+            <el-table-column label="登记">
+                <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="danger"
+                               v-on:click="fu(scope.row)">登记</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <p>
+
+            &nbsp;
+        </p>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            table: [],
+            second_kind_name: "",
+            third_kind_name: "",
+            shif: 0,
+            zong: 0,
+            len: 0,
+            nn: 0,
+            name: "",
+            sql:""
+        },
+        methods: {
+            je(val) {
+                return Number(val).toFixed(2);
+            },
+            fill: function () {
+                this.table =@Html.Raw(Json.Encode(cs));
+                console.log(this.table)
+                for (let i = 0; i < this.table.length; i++) {
+                    this.second_kind_name = this.table[i].second_kind_name;
+                    this.third_kind_name = this.table[i].third_kind_name;
+                    this.zong += this.table[i].salary_sum;
+                    this.shif += this.table[i].paid_salary_sum;
+                    this.len = this.table.length;
+                    this.nn += this.table[i].Number;
+
+
+                }
+            },
+
+            //登记
+            fu: function (i) {
+
+                if (i.first_kind_name !='') {
+                    this.sql = "[second_kind_name] ='' and [third_kind_name] ='' and first_kind_name='" + i.first_kind_name + "'";
+                    this.name = i.first_kind_name ;
+                }
+                if (i.second_kind_name != '') {
+                    this.sql = "[first_kind_name] !='' and [third_kind_name] ='' and second_kind_name='" + i.second_kind_name + "'";
+                    this.name = i.second_kind_name ;
+                }
+                if (i.third_kind_name !='') {
+                    this.sql = "[first_kind_name] !='' and [second_kind_name] !='' and third_kind_name='" + i.third_kind_name + "'";
+                    this.name = i.third_kind_name;
+                }
+             
+                location.href = '/SalaryGrant/Register_commit?sql=' + this.sql + '&name=' + this.name;
+            }
+        },
+        mounted: function () {
+            this.fill();
+        },
+       
+    })
+</script>
+

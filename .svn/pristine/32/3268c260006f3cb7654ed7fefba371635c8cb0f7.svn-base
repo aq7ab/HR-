@@ -1,0 +1,28 @@
+﻿using Dapper;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAO
+{
+    public class CFTKDAO
+    {
+        string conStr = "Data Source=.;Initial Catalog=HR_DB;Integrated Security=True";
+        /// <summary>
+        /// 查询全部
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<CFTK>> ThirdSelectAsync()
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                string sql = "select * from [dbo].[config_file_third_kind]";
+                return (List<CFTK>)await connection.QueryAsync<CFTK>(sql);
+            }
+        }
+    }
+}

@@ -1,0 +1,189 @@
+﻿using DAO;
+using Models;
+using NPOI.XWPF.UserModel;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+
+namespace WebApplication1.Controllers
+{
+    /// <summary>
+    /// 薪酬标准管理
+    /// </summary>
+    public class SalaryCriterionController : Controller
+    {
+        ConfigPublicCharDao cp = new ConfigPublicCharDao();
+        SSDAO ss =new SSDAO();
+        // GET: SalaryCriterion
+        /// <summary>
+        /// 打开薪酬标准登记
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Salarystandard_register()
+        {
+            User user = (User)Session["user"];
+            ViewBag.u = user;
+            return View();
+        }
+        /// <summary>
+        /// 选择全选
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> Qx()
+        {
+            IEnumerable cs = await cp.XCSelectAsync();
+            return Json(cs, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 编号
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> Bh()
+        {
+           return await ss.BhAsync();
+           
+        }
+        /// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="bh"></param>
+        /// <param name="name"></param>
+        /// <param name="qian"></param>
+        /// <param name="sc"></param>
+        /// <returns></returns>
+        public async Task<int> Tj(string bh,string name,string qian,SS sc)
+        {
+            return await ss.SSDInsertAsync(bh,name,qian,sc);
+        }
+        /// <summary>
+        /// 复核修改
+        /// </summary>
+        /// <param name="bh"></param>
+        /// <param name="qian"></param>
+        /// <param name="sc"></param>
+        /// <returns></returns>
+        public async Task<int> Xiu(string bh, string qian, SS sc)
+        {
+            return await ss.SSDUpdateAsync(bh,  qian, sc);
+        }
+
+        /// <summary>
+        /// 变更
+        /// </summary>
+        /// <param name="bh"></param>
+        /// <param name="qian"></param>
+        /// <param name="sc"></param>
+        /// <returns></returns>
+        public async Task<int> Change(string bh, string qian, SS sc)
+        {
+            return await ss.SSDChangeAsync(bh, qian, sc);
+        }
+        /// <summary>
+        /// 打开薪酬标准登记复核
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Fh()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 打开薪酬标准查询
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Salarystandard_query_locate()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 打开薪酬标准变更
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Salarystandard_change_locate()
+        {
+            return View();
+        }
+       
+        /// <summary>
+        /// 查询薪酬标准查询
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Ca(string str)
+        {
+            ViewBag.str = str;
+            return View();
+        }
+        /// <summary>
+        /// 查询薪酬标准变更
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Bian(string str)
+        {
+            ViewBag.str = str;
+            return View();
+        }
+        /// <summary>
+        /// 查询复核分页
+        /// </summary>
+        /// <param name="fenye"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> FY(FenYe<SS> fenye,string tj)
+        {
+            fenye = await ss.SSDSelectAsync(fenye,tj);
+            return Json(fenye, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 根据ID查询复核薪酬
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> Fu(int id,string sid)
+        {
+            User user = (User)Session["user"];
+            ViewBag.u = user;
+            ViewBag.s = await ss.SSelectIDAsync(id);
+           IEnumerable<SSD> sDs= await ss.SSDSelectIDAsync(sid);
+            ViewBag.i = sDs;
+            return View();
+
+        }
+        /// <summary>
+        /// 根据ID查询变更薪酬
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> Bgen(int id, string sid)
+        {
+            User user = (User)Session["user"];
+            ViewBag.u = user;
+            ViewBag.s = await ss.SSelectIDAsync(id);
+            IEnumerable<SSD> sDs = await ss.SSDSelectIDAsync(sid);
+            ViewBag.i = sDs;
+            return View();
+
+        }
+
+        /// <summary>
+        /// 根据ID薪酬标准登记查询
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> Salarystandard(int id, string sid)
+        {
+           
+            ViewBag.s = await ss.SSelectIDAsync(id);
+            IEnumerable<SSD> sDs = await ss.SSDSelectIDAsync(sid);
+            ViewBag.i = sDs;
+            return View();
+
+        }
+
+
+      
+
+    }
+}

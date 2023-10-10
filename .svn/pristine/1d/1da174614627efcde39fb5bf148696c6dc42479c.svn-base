@@ -1,0 +1,159 @@
+﻿
+@{
+    Layout = null;
+    List<Models.Roles> cs = ViewBag.xia;
+   Models.RolesView qq = ViewBag.quan;
+}
+
+<!DOCTYPE html>
+
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>编辑用户</title>
+    <link rel="stylesheet"
+          href="../../css/table.css" type="text/css" />
+    <script type="text/javascript" src="../../javascript/jquery-1.7.2.js"></script>
+    <script type="text/javascript"
+            src="../../javascript/jquery.messager.js"></script>
+    <script type="text/javascript" src="../../javascript/user_add.js"></script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+</head>
+<body>
+    <div id="app">
+        <form>
+            <table width="100%">
+                <tr>
+                    <td>
+
+                        <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                            <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                            <el-breadcrumb-item><a href="#">权限管理</a></el-breadcrumb-item>
+                            <el-breadcrumb-item>编辑用户</el-breadcrumb-item>
+                        </el-breadcrumb>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <input type="button" value="保存" v-on:click="tj" class="BUTTON_STYLE1" />
+                        <input type="button" value="返回" class="BUTTON_STYLE1"
+                               onclick="history.back()">
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=3 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td class="TD_STYLE1">用户名称</td>
+                    <td class="TD_STYLE2">
+                        <el-input type="text" v-model="name" id="userName" name="users.userName" style="width:160px"/>
+                    </td>
+                    <td class="TD_STYLE1">用户密码</td>
+                    <td class="TD_STYLE2">
+                        <el-input type="password" v-model="pwd" id="userPassword" name="users.userPassword" style="width:160px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">真实姓名</td>
+                    <td class="TD_STYLE2">
+                        <el-input type="text" v-model="uname" id="userTrueName" name="users.userTrueName" style="width:160px"/>
+                    </td>
+                    <td class="TD_STYLE1">用户身份</td>
+                    <td class="TD_STYLE2">
+                        <el-select v-model="sf" placeholder="请选择用户身份" class="INPUT_STYLE2" id="sf" style="width:160px">
+
+                            <el-option v-for="item in options1"
+                                       :key="item.RolesID"
+                                       :label="item.RolesName"
+                                       :value="item.RolesID">
+                            </el-option>
+
+                        </el-select>
+
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            sf: "",
+            name: "",
+            uname: "",
+            pwd: "",
+            bh: "",
+            uid: "",
+            options1:[]
+        },
+        methods: {
+            fill() {
+                document.getElementById("userName").value =@Html.Raw(Json.Encode(qq.u_name));
+                document.getElementById("userPassword").value =@Html.Raw(Json.Encode(qq.u_password));
+                document.getElementById("userTrueName").value =@Html.Raw(Json.Encode(qq.u_true_name));
+                this.bh =@Html.Raw(Json.Encode(qq.UserRolesID));
+                 this.uid=@Html.Raw(Json.Encode(qq.u_id));
+                this.sf =@Html.Raw(Json.Encode(qq.RolesID));
+                this.options1=@Html.Raw(Json.Encode(cs));
+            },
+            //添加
+            tj() {
+                var name = document.getElementById("userName").value;
+                var pwd = document.getElementById("userPassword").value;
+                var uname = document.getElementById("userTrueName").value;
+                if (name.length <= 0) {
+                    alert("用户名称不可为空!!!");
+                    return;
+                }
+                if (pwd.length <= 0) {
+                    alert("用户密码不可为空!!!");
+                    return;
+                }
+                if (uname.length <= 0) {
+                    alert("真实姓名不可为空!!!");
+                    return;
+                }
+                if (this.sf=="") {
+                    alert("请选择用户身份!!!");
+                    return;
+                }
+                axios.get('/Power/Update', {
+                    params: {
+                        u_name: name,
+                        u_true_name: uname,
+                        u_password: pwd,
+                        RolesID: this.sf,
+                        UserRolesID: this.bh,
+                        u_id: this.uid
+                    }
+                })
+                    .then(res => {
+                        if (res.data > 0) {
+                            alert("修改成功！");
+                            location.href = '/Power/User_list'
+
+                        } else {
+                            alert("修改失败！")
+                        }
+
+                    }).catch(err => {
+                        console.log(err);
+                    })
+            },
+
+        },
+        mounted: function () {
+            this.fill();
+        },
+
+    })
+</script>

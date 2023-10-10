@@ -1,0 +1,85 @@
+﻿using DAO;
+using Models;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+
+namespace WebApplication1.Controllers
+{
+    public class HumanResourcesController : Controller
+    {
+        //一级机构设置
+        CFFKDAO cf = new CFFKDAO();
+        //二级机构设置
+        CFSKDAO sk = new CFSKDAO();
+        //三级机构设置
+        CFTKDAO tk = new CFTKDAO();
+        //职位设置
+        ConfigMajorDao cd = new ConfigMajorDao();
+        //职位分类设置
+        ConfigMajorKindDao kd = new ConfigMajorKindDao();
+        //公共属性设置
+        ConfigPublicCharDao cp = new ConfigPublicCharDao();
+        //职位发布登记
+        EngageMajorReleaseDao ed = new EngageMajorReleaseDao();
+        //
+        EngageResumeDao er = new EngageResumeDao();
+        //人力资源
+        HumanFileDao hf = new HumanFileDao();
+        // GET: HumanResources
+        /// <summary>
+        /// 打开人力资源档案登记
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> HumanRegister()
+        {
+            ViewBag.s = await cf.FirstSelectAsync();
+            ViewBag.ss = await sk.SecondSelectAsync();
+            ViewBag.sss = await tk.ThirdSelectAsync();
+            ViewBag.ssss = await cd.CMSelectAsync();
+            ViewBag.sssss = await kd.CMKSelectAsync();
+            ViewBag.ssssss = await cp.ZCSelectAsync();
+            User user = (User)Session["user"];
+            ViewBag.u = user;
+            return View();
+        }
+        /// <summary>
+        /// 提交人力资源档案登记
+        /// </summary>
+        /// <param name="ee"></param>
+        /// <returns></returns>
+        public async Task<int> HMInsert(HumanFile ee)
+        {
+            return await hf.HFInsertAsync(ee);
+        }
+        /// <summary>
+        /// 打开人力资源档案登记复核
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> CheckList()
+        {
+            ViewBag.h = await hf.HFCount();
+            return View();
+        }
+        /// <summary>
+        /// 查询人力资源档案登记复核
+        /// </summary>
+        /// <param name="hh"></param>
+        /// <param name="tj"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> FenYe(FenYe<HumanFile> hh,string tj)
+        {
+            hh = await hf.HFSelectAsync(hh, tj);
+            return Json(hh, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<ActionResult> HFXia()
+        {
+            IEnumerable cs = await hf.GetFindAsync();
+            return Json(cs, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

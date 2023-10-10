@@ -1,0 +1,261 @@
+﻿
+@{
+    Layout = null;
+    List<Models.Fill> cs = ViewBag.h;
+}
+
+<!DOCTYPE html>
+@using Models
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../css/table.css" type="text/css" />
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <script src="~/javascript/echarts.min.js"></script>
+    <title>人力资源薪酬发放复核</title>
+    <style type="text/css">
+
+        .style3 {
+            color: #0000CC
+        }
+
+        td {
+            text-align: center
+        }
+
+        #a {
+            text-decoration: none;
+            color: #606266
+        }
+        body {
+            background-color: #F1F2F7;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    @{ }
+    <div id="app">
+        <form>
+            <table width="100%">
+                <tr>
+                    <td colspan="2" style="text-align: left">
+                        <font color="black">
+
+                            <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                                <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                                <el-breadcrumb-item><a href="#">薪酬发放管理</a></el-breadcrumb-item>
+                                <el-breadcrumb-item>薪酬发放复核</el-breadcrumb-item>
+                            </el-breadcrumb>
+                        </font>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: right;">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left">
+                        薪酬单编号： @ViewBag.bh
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left">
+                        机构：
+                        @ViewBag.name
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left">
+                        本机构总人数:{{len}}
+
+                        ，基本薪酬总数:{{je(zong)}}
+                        ，实发总额:{{je(shif)}}
+
+
+                    </td>
+                    <td style="text-align: right;">
+                        登记人:@ViewBag.djr
+                        登记时间： {{ sj | ftime }}
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left">
+                        &nbsp;
+
+                    </td>
+                </tr>
+            </table>
+
+            <el-table :data="table"
+                      stripe
+                      style="width: 100%; background-color: #F1F2F7;">
+                <el-table-column label="序号">
+                    <template slot-scope="scope">
+                        {{scope.$index+1}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="human_id"
+                                 label="档案编号">
+
+                </el-table-column>
+                <el-table-column prop="human_name"
+                                 label="姓名">
+
+
+
+
+                </el-table-column>
+                <el-table-column label="薪酬基本明细">
+                    <template slot-scope="scope">
+                        <a id="a" v-on:click="mx(scope.row.salary_standard_id)">详细内容</a>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="Bouns_sum"
+                                 label="奖励金额">
+
+                </el-table-column>
+                <el-table-column prop="Sale_sum" label="销售绩效总额">
+
+                </el-table-column>
+                <el-table-column prop="Deduct_sum" label="应扣金额">
+
+                </el-table-column>
+                <el-table-column prop="Salary_paid_sum" label="实发金额">
+
+                </el-table-column>
+
+            </el-table>
+            <br>
+            <center>
+                <input type="button" style="width: 200;height: 50;font-size: 20px;font-weight: bold;border-bottom-style: ridge;cursor: pointer" onclick="javascript:window.history.back();" value="返 回">
+
+            </center>
+        </form>
+        <el-dialog title="薪酬标准单详细信息"
+                   :visible.sync="zj"
+                   width="45%"
+                   :before-close="handleClose">
+            <div ref="chart" style="width: 600px;height:400px;"></div>
+            <el-button size="small" round style="margin-left: 621px; margin-top: 38px;" v-on:click="handleClose">关闭</el-button>
+        </el-dialog>
+
+    </div>
+  
+</body>
+</html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            table: [],
+           bh:"",
+            shif: 0,
+            zong: 0,
+            len: 0,
+            name: "",
+            drl: "",
+            sj:"",
+            jin: [],
+            Item_name: [],
+            Salary: [],
+
+
+            list1:[],
+            zj: false,
+
+        },
+        methods: {
+            je(val) {
+                return Number(val).toFixed(2);
+            },
+            fill: function () {
+                this.table =@Html.Raw(Json.Encode(cs));
+                
+                this.bh=@Html.Raw(Json.Encode(ViewBag.bh));
+               this.sj=@Html.Raw(Json.Encode(ViewBag.sj));
+
+                for (let i = 0; i < this.table.length; i++) {
+                    this.zong += this.table[i].salary_sum;
+                    this.shif += this.table[i].paid_salary_sum;
+                    this.len = this.table.length;
+                }
+
+            },
+
+            handleClose() {
+                this.zj = false;
+            },
+            mx(i) {
+                this.zj = true;
+                axios.get('/SalaryGrant/Xx', {
+                    params: {
+                        id:i
+                    }
+                })
+                    .then(res => {
+                        this.list1 = res.data;
+                        console.log(this.list1);
+                        for (var i = 0; i < this.list1.length; i++) {
+                            this.Item_name[i] = this.list1[i].Item_name;
+                            this.Salary[i] = this.list1[i].Salary;
+                        }
+                        const myChart = echarts.init(this.$refs.chart); // 实例化echarts对象
+                        option = {
+                            xAxis: {
+                                type: 'category',
+                                data: this.Item_name,
+                            },
+                            yAxis: {
+                                type: 'value'
+                            },
+                            series: [
+                                {
+                                    data: this.Salary,
+                                    type: 'bar',
+                                    color: '#2A3542'
+                                }
+                            ]
+                        };
+                        myChart.setOption(option);
+
+
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            },
+
+
+
+        },
+        mounted: function () {
+            this.fill();
+
+        },
+        //时间格式
+        filters: {
+            ftime: function (value, spe) {
+                if (value == '/Date(-62135596800000)/') {
+                    return '空'
+                }
+                var dt = new Date(parseInt(value.replace("/Date(", "").replace(")/", ""), 10));
+                return dt.getFullYear() + "年" + (dt.getMonth() + 1) + "月" + dt.getDate()+"日";
+            }
+        }
+    })
+</script>
+
+
+

@@ -1,0 +1,109 @@
+﻿
+@{
+    Layout = null;
+  
+}
+@using Models
+<!DOCTYPE html>
+
+<html>
+@{ User s = ViewBag.u;}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet"
+          href="../css/table.css" type="text/css">
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            font-family: 微软雅黑;
+        }
+
+        .u {
+            height: inherit;
+            float: right !important;
+            margin-right: 60px;
+        }
+
+        .img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+        .img1 {
+           
+            width: 20px;
+            height: 20px;
+        }
+        li {
+            height: 100%;
+            display: inline-block;
+            position: relative;
+          
+        }
+        a {
+            color: #565656;
+            text-align: center;
+            padding: 0 22px;
+            text-decoration: none;
+        }
+       
+        li:hover {
+            box-shadow: 0px 27px #2A3542;
+        }
+        #vv {
+            width: 200px;
+            height: 100px;
+            background: #2A3542 ;
+            float: left !important;
+        }
+    </style>
+</head>
+<body topmargin="0" leftmargin="0">
+    <div id="vv">
+        <img src="~/images/hh.png"  style="width: 176px; padding-top: 18px; padding-left: 12px;"/>
+    </div>
+    <ul class="u">
+        <li>
+            <a>
+                <img src="~/images/关闭.png" class="img" />
+            </a>
+          
+        </li>
+        <li style="height: 33px;">
+            <a>
+              
+                <img src="~/images/关闭.png"  class="img1"/>
+            </a>
+          
+        </li>
+        <li style="height:53px">
+            <a>
+                <img src="~/images/wu.jpg"  class="img">
+            </a>
+          
+        </li>
+    </ul>
+    @*<div id="zy"> 人力资源管理系统</div>*@
+
+    @*<table style="width: 70%; margin-left: 30%;">
+            <tr>
+                <td style="text-align: right;width:30%">
+            <p style="font-size: 12px; margin: 0; color: white; filter:progid:DXImageTransform.Microsoft.Shadow(color=black,direction=120,strength=5); text-shadow: 4px 4px 15px black;">
+                人力资源管理系统
+            </p>
+                </td>
+                <td style="text-align: right;font-size:17px;width:35%;color:black;">
+                    <br />
+                    欢迎你：@s.U_name (@s.RolesName)&nbsp;
+                    <input type="button" value="退出系统" class="BUTTON_STYLE1" />&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>*@
+</body>
+</html>

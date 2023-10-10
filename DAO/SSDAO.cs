@@ -1,0 +1,158 @@
+﻿using Dapper;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAO
+{
+    /// <summary>
+    /// 薪酬标准管理
+    /// </summary>
+    public class SSDAO
+    {
+        string conStr = "Data Source=.;Initial Catalog=HR_DB;Integrated Security=True";
+        /// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="sD"></param>
+        /// <returns></returns>
+        public async Task<int> SSDInsertAsync(string bh,string name,string qian,SS ss)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@standard_id", ss.Standard_id);
+                dd.Add("@standard_name", ss.Standard_name);
+                dd.Add("@item_ids",bh );
+                dd.Add("@item_names",name );
+                dd.Add("@salaries",qian );
+                dd.Add("@designer",ss.Designer );
+                dd.Add("@register",ss.Register );
+                dd.Add("@regist_time",ss.Regist_time );
+                dd.Add("@remark", ss.Remark);
+                dd.Add("@salary_sum", ss.Salary_sum);
+                
+                return await connection.ExecuteAsync("xinshiwu", dd,commandType:CommandType.StoredProcedure );
+            }
+        }
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="sD"></param>
+        /// <returns></returns>
+        public async Task<int> SSDUpdateAsync(string bh,  string qian, SS ss)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@sdt_ids", bh);
+                dd.Add("@salaries", qian);
+                dd.Add("@standard_id", ss.Standard_id);
+                dd.Add("@standard_name", ss.Standard_name);
+                dd.Add("@salary_sum", ss.Salary_sum);
+                dd.Add("@designer", ss.Designer);
+                dd.Add("@checker", ss.Checker);
+                dd.Add("@check_time", ss.Check_time);
+                dd.Add("@check_comment", ss.Check_comment);
+                dd.Add("@check_status", ss.Check_status);
+
+
+
+                return await connection.ExecuteAsync("xiushiwu", dd, commandType: CommandType.StoredProcedure);
+            }
+           
+        }
+
+        /// <summary>
+        /// 变更
+        /// </summary>
+        /// <param name="sD"></param>
+        /// <returns></returns>
+        public async Task<int> SSDChangeAsync(string bh, string qian, SS ss)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@sdt_ids", bh);
+                dd.Add("@salaries", qian);
+                dd.Add("@standard_id", ss.Standard_id);
+                dd.Add("@standard_name", ss.Standard_name);
+                dd.Add("@salary_sum", ss.Salary_sum);
+                dd.Add("@designer", ss.Designer);
+                dd.Add("@changer", ss.Changer);
+                dd.Add("@change_time", ss.Change_time);
+                dd.Add("@remark", ss.Remark);
+                return await connection.ExecuteAsync("bianshiwu", dd, commandType: CommandType.StoredProcedure);
+            }
+        }
+        /// <summary>
+        /// SDD的编号
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> BhAsync()
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                string sql = $@"SELECT RIGHT(CONCAT('000000',FLOOR(RAND()* 1000000)),6)";
+                string sj = DateTime.Now.Year.ToString()+ DateTime.Now.Month.ToString()+DateTime.Now.Day.ToString();
+                string bh = "LZY" + sj+await connection.QueryFirstAsync<string>(sql);
+                return  bh;
+            }
+        }
+
+        /// <summary>
+        /// 查询复核分页
+        /// </summary>
+        /// <param name="fc"></param>
+        /// <returns></returns>
+        public async Task<FenYe<SS>> SSDSelectAsync(FenYe<SS> fc, string tj)
+        {
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@pageSize", fc.PageSize);
+                dd.Add("@keyName", "ssd_id");
+                dd.Add("@tableName", "salary_standard");
+                dd.Add("@currentPage", fc.CurrentPage);
+                dd.Add("where", tj);
+                dd.Add("@row", direction: ParameterDirection.Output, dbType: DbType.Int32);
+                string sql = "exec [dbo].[FenYe] @pageSize, @keyName, @tableName, @currentPage,@where, @row out";
+                fc.List = await con.QueryAsync<SS>(sql, dd);
+                fc.Rows = dd.Get<int>("row");
+                return fc;
+            }
+        }
+
+        /// <summary>
+        /// 根据ID查全部
+        /// </summary>
+        /// <returns></returns>
+        public async Task<SS> SSelectIDAsync(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                string sql = $"select * from [dbo].[salary_standard] where [ssd_id]='{id}'";
+                return await connection.QueryFirstAsync<SS>(sql);
+            }
+        }
+        /// <summary>
+        /// 根据ID查金额
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<SSD>> SSDSelectIDAsync( string sid)
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            {
+                string sql = $"select * from [dbo].[salary_standard_details] where [standard_id]='{sid}'";
+                return (List<SSD>)await connection.QueryAsync<SSD>(sql);
+            }
+        }
+        
+    }
+}

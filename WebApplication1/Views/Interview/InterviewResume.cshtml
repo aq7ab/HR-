@@ -1,0 +1,201 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>My JSP 'resume-choose.jsp' starting page</title>
+
+    <link rel="stylesheet"
+          href="../../../css/table.css" type="text/css">
+    <link rel="stylesheet"
+          href="../../../css/cwcalendar.css" type="text/css">
+    <script type="text/javascript"
+            src="../../../javascript/comm/comm.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/list.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/calendar-ch.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/locate.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/select.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/time.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #F1F2F7;
+        }
+
+        .TD_STYLE1 {
+            background-color: #c0c4cc;
+            padding-left: 27px;
+        }
+
+        .TD_STYLE2 {
+            background-color: #F1F2F7;
+        }
+
+        .INPUT_STYLE2 {
+            background-color: #F1F2F7;
+        }
+
+        .INPUT_STYLE1 {
+            background-color: #F1F2F7;
+        }
+    </style>
+    <script type="text/javascript">
+        function search() {
+
+            if (document.getElementById("majorKindId").value == "0") {
+                document.getElementById("majorKindId").value = null;
+            }
+            document.resumeChooseForm.submit();
+        }
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <el-form ref="form" :model="utilBean" :rules="rules">
+            <input type="hidden" name="engageResume.humanMajorKindName"
+                   id="majorKindName" />
+            <input type="hidden" name="engageResume.humanMajorName"
+                   id="majorName" />
+            <input type="hidden" name="engageResume.checkStatus"
+                   value="false" />
+
+            <table width="100%">
+                <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                    <el-breadcrumb-item :to="{ path: '/' }">人力资源管理</el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">招聘管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">面试管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item>面试筛选</el-breadcrumb-item>
+                </el-breadcrumb>
+                <tr>
+                    <td align="right">
+
+                        <input type="button" value="开始" class="BUTTON_STYLE1"
+                               v-on:click="search">
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+
+                <tr>
+                    <td class="TD_STYLE1" width="30%">
+                        请选择职位分类
+                    </td>
+                    <td class="TD_STYLE2" width="30%">
+                        <el-cascader v-model="value1"
+                                     :options="options"
+                                     placeholder="请选择职位"
+                                     clearable></el-cascader>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="TD_STYLE1" width="30%">
+                        请输入关键字
+                    </td>
+                    <td width="84%">
+                        <el-input type="text" v-model="utilBean.primarKey" value="" name="utilBean.primarKey" id="gjz"
+                                  class="INPUT_STYLE2" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="TD_STYLE1" width="30%">
+                        请输入登记时间
+                    </td>
+                    <td width="84%" class="TD_STYLE2">
+                        <el-date-picker v-model="startDate"
+                                        type="date"
+                                        placeholder="选择日期">
+                        </el-date-picker>
+                        至
+                        <el-date-picker v-model="endDate"
+                                        type="date"
+                                        placeholder="选择日期">
+                        </el-date-picker>
+                        （YYYY-MM-DD）
+                    </td>
+                </tr>
+            </table>
+        </el-form>
+    </div>
+    <script type="text/javascript">
+        let str = "interview_status=1 and pass_checkComment is NULL";
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                utilBean: {
+                    humanMajorKindName: "",
+                    humanMajorName: "",
+                    interview_status: "",
+                    primarKey: "",
+                },
+                startDate: "",
+                endDate: "",
+                options: [],
+                value1: [],
+                rules: {}
+            },
+            methods: {
+                ee: function () {
+                    axios.get('/Recruit/ERXia')
+                        .then(res => {
+                            this.options = res.data;
+                            console.log(this.options)
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                },
+                search: function () {
+                    var primarKey = document.getElementById("gjz").value;
+                    
+                    str = "interview_status=1 and pass_checkComment is NULL";
+                    if (this.value1[0] != undefined) {
+                        str += "and human_major_kind_id = " + this.value1[0] + " and human_major_id = " + this.value1[1] + "";
+                    }
+                    if (primarKey.length > 0) {
+                        str += "and image_degree like '%" + primarKey + "%'and interview_status=1 or human_name like '%" + primarKey + "%'and interview_status=1";
+                    }
+                    if (this.startDate != "" && this.endDate != "") {
+                        str += "and regist_time between '" + this.startDate + " 'and '" + this.endDate + "'";
+                    }
+                    //alert(str);
+
+                    location.href = '/Interview/SiftList?str=' + str;
+                },
+            },
+            mounted: function () {
+                this.ee();
+            }
+        })
+    </script>
+</body>
+
+</html>

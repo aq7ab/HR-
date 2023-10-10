@@ -1,0 +1,132 @@
+﻿
+@{
+    Layout = null;
+}
+@using Models
+@model User
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type=text/css>
+        body {
+            font-size: 12px;
+            color: #ffffff;
+            font-family: 宋体 ;background-color: white;
+        }
+
+        td {
+            font-size: 12px;
+            color: #ffffff;
+            font-family: 宋体
+        }
+        #ii {
+            position: relative;
+            top: 4px;
+        }
+        .s{
+            color:red;
+        }
+    </style>
+    <script type="text/javascript"
+            src="../../javascript/jquery-1.7.2.js">
+    </script>   
+    <script type="text/javascript"
+            src="../../javascript/jquery.messager.js">
+    </script>
+    <script type="text/javascript"
+            src="../../javascript/login.js">
+    </script>
+    
+</head>
+<body>
+    <div id="app">
+        @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+        {
+           
+                <div>
+                    <table cellspacing=0 cellpadding=0 width=900 align=center border=0>
+                        <tbody>
+                            <tr>
+                                <td style="height: 105px" id="ii">
+                                    <img src="/images/login_11.gif" border=0>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td background=/images/login_22.jpg height=300>
+                                    <table height=300 cellpadding=0 width=900 border=0>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan=2 height=35></td>
+                                            </tr>
+                                            <tr>
+                                                <td width=360></td>
+                                                <td>
+                                                    <table cellspacing=0 cellpadding=2 border=0>
+                                                        <tbody>
+                                                            <tr>
+
+                                                                <td style="height: 28px" width=80>
+                                                                    @Html.LabelFor(e => e.U_name)
+                                                                   
+                                                                </td>
+                                                                <td style="height: 28px" width=150>
+                                                                  
+                                                                    @Html.TextBoxFor(e => e.U_name, new { style = "height: 28px;width = 150px", placeholder = "请输入登录名" })
+                                                                    @Html.ValidationMessageFor(e => e.U_name, "", new { @class = "s" })
+                                                                   
+
+
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="height: 28px">
+                                                                    @Html.LabelFor(e => e.U_password)
+                                                                </td>
+                                                                <td style="height: 28px" width=150>
+                                                                  
+                                                                    @Html.TextBoxFor(e => e.U_password, new { style = "height: 28px;width = 150px", type = "password", placeholder = "请输入登录密码" })
+                                                                    @Html.ValidationMessageFor(e => e.U_password, "", new { @class = "s" })
+                                                                 
+
+
+                                                                </td>
+
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="height: 18px"></td>
+                                                                <td style="height: 18px"></td>
+                                                                <td style="height: 18px"></td>
+                                                            </tr>
+                                                            <tr>
+
+                                                                <td>
+                                                                    <input type="submit" value="登录" style="cursor: pointer;" />
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="/images/login_33.jpg" border=0>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            
+        }
+
+    </div>
+</body>
+</html>
+
+

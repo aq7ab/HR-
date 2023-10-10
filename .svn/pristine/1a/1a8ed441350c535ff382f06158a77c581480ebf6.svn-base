@@ -1,0 +1,160 @@
+﻿
+@{
+    Layout = null;
+    List<ConfigMajorKind> cc = ViewBag.s;
+}
+
+@using Models
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet"
+          href="../../css/table.css" type="text/css">
+    <script type="text/javascript"
+            src="../../javascript/comm/comm.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #D4F8D4;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div id="app">
+
+        <el-form ref="form" :model="ruleForm" :rules="rules">
+
+            <table width="100%">
+                <tr>
+                    <td>
+                        <font color="black">
+                            您正在做的业务是：人力资源--客户化设置--人力资源档案管理设置--职位设置--职位添加
+                        </font>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <input type="button" value="提交" v-on:click="tj" class="BUTTON_STYLE1">
+                        <input type="button" value="返回" class="BUTTON_STYLE1"
+                               onclick="history.back();">
+                    </td>
+                </tr>
+            </table>
+
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td width="19%">
+                        职位分类编号
+                    </td>
+
+                    <td width="81%">
+
+                        <el-select v-model="value" placeholder="请选择" v-on:change="pp()">
+                            @foreach (ConfigMajorKind cm in cc)
+                            {
+                                <el-option value="@cm.major_kind_name" label='@cm.major_kind_id'>@cm.major_kind_id</el-option>
+                            }
+                        </el-select>
+                        @*<el-form-item prop="bh">
+                            <el-input v-model="ruleForm.bh"></el-input>
+                        </el-form-item>*@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        职位分类名称
+                    </td>
+                    <td>
+                        <el-form-item prop="name">
+                            <el-input v-model="ruleForm.name" readonly></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        职位编号
+                    </td>
+                    <td>
+                        <el-form-item prop="name">
+                            <el-input v-model="ruleForm.id"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        职位名称
+                    </td>
+                    <td>
+                        <el-form-item prop="name">
+                            <el-input v-model="ruleForm.mc"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+            </table>
+        </el-form>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                ruleForm: {
+                    id: "",
+                    bh: "",
+                    mc: "",
+                    name: "",
+                },
+                value: "",
+                options: [],
+                rules: {
+                    bh: [{ required: true, message: '职位分类编号不能为空！', trigger: 'blur' }],
+                    name: [{ required: true, message: '职位分类名称不能为空！', trigger: 'blur' }],
+                    id: [{ required: true, message: '职位编号不能为空！', trigger: 'blur' }],
+                    mc: [{ required: true, message: '职位名称不能为空！', trigger: 'blur' }],
+                }
+            },
+            methods: {
+                tj: function () {
+                    var t = this;
+                    t.$refs.form.validate(valid => {
+                        if (valid) {
+                            axios.get('/Cilent/MMInsert', {
+                                params: {
+                                    major_kind_id: t.value,
+                                    major_kind_name: t.ruleForm.name,
+                                    major_id: t.ruleForm.id,
+                                    major_name: t.ruleForm.mc,
+                                }
+                            })
+                                .then(res => {
+                                    if (res.data > 0) {
+                                        alert("添加成功！")
+                                        location.href = '/Cilent/Major'
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                        } else {
+                            alert("请填写完整信息！")
+                        }
+                    })
+                },
+                pp: function () {
+                    this.ruleForm.name = this.value;
+                }
+            }
+        })
+    </script>
+</body>
+</html>

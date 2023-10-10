@@ -1,0 +1,229 @@
+﻿using Dapper;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAO
+{
+    public class EngageResumeDao
+    {
+        string str = "Data Source=.;Initial Catalog=HR_DB;Integrated Security=True";
+        public async Task<int> ERInsertAsync(EngageResume ee)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                //string mdk = $@"";
+                //string midk = await con.QueryFirstAsync<string>(mdk);
+
+                //string md = $@"";
+                //string mid = await con.QueryFirstAsync<string>(md);
+
+                string sql = $@"insert into engage_resume(human_name, engage_type, human_address,
+                human_postcode, human_major_kind_id, human_major_kind_name, human_major_id,
+                human_major_name, human_telephone, human_homephone, human_mobilephone, human_email,
+                human_hobby,human_specility, human_sex, human_religion, human_party,human_nationality,
+                human_race, human_birthday, human_age,human_educated_degree, human_educated_years,
+                human_educated_major, human_college, human_idcard, human_birthplace,
+                demand_salary_standard, human_history_records, remark, recomandation, human_picture,
+                attachment_name, check_status, register, regist_time, checker, check_time, 
+                interview_status, total_points, test_amount, test_checker, test_check_time, pass_register,
+                pass_regist_time, pass_checker, pass_check_time, pass_check_status, pass_checkComment,
+                pass_passComment) values('{ee.human_name}','{ee.engage_type}','{ee.human_address}',
+                '{ee.human_postcode}',(select major_kind_id from config_major_kind where major_kind_name = '{ee.human_major_kind_name}'),'{ee.human_major_kind_name}',
+                (select major_id from config_major where major_name = '{ee.human_major_name}'),'{ee.human_major_name}','{ee.human_telephone}','{ee.human_homephone}',
+                '{ee.human_mobilephone}','{ee.human_email}','{ee.human_hobby}','{ee.human_specility}',
+                '{ee.human_sex}','{ee.human_religion}','{ee.human_party}','{ee.human_nationality}',
+                '{ee.human_race}','{ee.human_birthday}','{ee.human_age}','{ee.human_educated_degree}',
+                '{ee.human_educated_years}','{ee.human_educated_major}','{ee.human_college}',
+                '{ee.human_idcard}','{ee.human_birthplace}','{ee.demand_salary_standard}',
+                '{ee.human_history_records}','{ee.remark}','{ee.recomandation}','{ee.human_picture}',
+                '{ee.attachment_name}','0','{ee.register}','{ee.regist_time}',
+                '{ee.checker}','{ee.check_time}','{ee.interview_status}','{ee.total_points}',
+                '{ee.test_amount}','{ee.test_checker}','{ee.test_check_time}','{ee.pass_register}',
+                '{ee.pass_regist_time}','{ee.pass_checker}','{ee.pass_check_time}','{ee.pass_check_status}',
+                '{ee.pass_checkComment}','{ee.pass_passComment}')";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        public async Task<int> EIInsertAsync(EngageResume ei)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+              
+                string sql = $@"insert into [dbo].[engage_interview](human_name, interview_amount, human_major_kind_id, 
+human_major_kind_name, human_major_id, human_major_name, image_degree, native_language_degree, foreign_language_degree, 
+response_speed_degree, EQ_degree, IQ_degree, multi_quality_degree, register, checker, registe_time, check_time, resume_id, result, 
+interview_comment, check_comment, interview_status, check_status) values('{ei.human_name}','{ei.interview_amount}',
+(select major_kind_id from config_major_kind where major_kind_name = '{ei.human_major_kind_name}'),'{ei.human_major_kind_name}',
+(select major_id from config_major where major_name = '{ei.human_major_name}'),'{ei.human_major_name}','{ei.image_degree}','{ei.native_language_degree}',
+'{ei.foreign_language_degree}','{ei.response_speed_degree}','{ei.EQ_degree}','{ei.IQ_degree}','{ei.multi_quality_degree}','{ei.register}',
+'{ei.checker}','{ei.regist_time}','{ei.check_time}','{ei.resume_id}','{ei.result}','{ei.interview_comment}','{ei.check_comment}',
+'1','1')";
+                string oo = $@"update engage_resume set interview_status = '1' where res_id = '{ei.resume_id}'";
+                await con.ExecuteAsync(oo);
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        public async Task<IEnumerable<First>> ERXiaAsync()
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $"select major_kind_id as value,major_kind_name as label from [dbo].[config_major_kind]";
+                List<First> first_Cascaders = new List<First>() { };
+                List<First> fir = con.Query<First>(sql).ToList();
+                foreach (var item in fir)
+                {
+                    string sql_1 = $"select major_id as value,major_name as label from [dbo].[config_major] where major_kind_id={item.value} ";
+                    First cf = new First()
+                    {
+                        value = item.value,
+                        label = item.label,
+                        children = con.Query<Second>(sql_1).ToList(),
+                    };
+                    first_Cascaders.Add(cf);
+                }
+                return first_Cascaders;
+            }
+        }
+        public async Task<FenYe<EngageResume>> ERSelectAsync(FenYe<EngageResume> er, string tj)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@pageSize", er.PageSize);
+                dd.Add("@keyName", "res_id");
+                dd.Add("@tableName", "engage_resume");
+                dd.Add("@currentPage", er.CurrentPage);
+                dd.Add("@where", tj);
+                dd.Add("@row", direction: ParameterDirection.Output, dbType: DbType.Int32);
+                string sql = "exec [dbo].[FenYe] @pageSize, @keyName, @tableName, @currentPage, @where, @row out";
+                er.List = await con.QueryAsync<EngageResume>(sql, dd);
+                er.Rows = dd.Get<int>("row");
+                return er;
+            }
+        }
+        public async Task<FenYe<EngageResume>> EISelectAsync(FenYe<EngageResume> er, string tj)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@pageSize", er.PageSize);
+                dd.Add("@keyName", "ein_id");
+                dd.Add("@tableName", "engage_interview");
+                dd.Add("@currentPage", er.CurrentPage);
+                dd.Add("@where", tj);
+                dd.Add("@row", direction: ParameterDirection.Output, dbType: DbType.Int32);
+                string sql = "exec [dbo].[FenYe] @pageSize, @keyName, @tableName, @currentPage, @where, @row out";
+                er.List = await con.QueryAsync<EngageResume>(sql, dd);
+                er.Rows = dd.Get<int>("row");
+                return er;
+            }
+        }
+        public async Task<EngageResume> ERSelectIdAsync(string id)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"select * from engage_resume where res_id = '{id}'";
+                return await con.QueryFirstAsync<EngageResume>(sql);
+            }
+        }
+        public async Task<EngageResume> EISelectIdAsync(string ii)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"select * from engage_interview i inner join engage_resume r on r.res_id = i.resume_id where ein_id = '{ii}'";
+                return await con.QueryFirstAsync<EngageResume>(sql);
+            }
+        }
+        public async Task<EngageResume> EIIdAsync(string ii)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"select * from engage_interview i inner join engage_resume r on r.res_id = i.resume_id where res_id = '{ii}'";
+                return await con.QueryFirstAsync<EngageResume>(sql);
+            }
+        }
+        public async Task<int> ERUpdateAsync(EngageResume er)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"update [dbo].[engage_resume] set engage_type = '{er.engage_type}',human_email = '{er.human_email}',
+                human_telephone = '{er.human_telephone}',human_homephone = '{er.human_homephone}',human_mobilephone = '{er.human_mobilephone}',
+                human_address = '{er.human_address}',human_postcode = '{er.human_postcode}',human_nationality = '{er.human_nationality}',
+                human_birthplace = '{er.human_birthplace}',human_birthday = '{er.human_birthday}',human_race = '{er.human_race}',
+                human_religion = '{er.human_religion}',human_party = '{er.human_party}',human_idcard = '{er.human_idcard}',
+                human_age = '{er.human_age}',human_college = '{er.human_college}',human_educated_degree = '{er.human_educated_degree}',
+                human_educated_years = '{er.human_educated_years}',human_educated_major = '{er.human_educated_major}',
+                demand_salary_standard = '{er.demand_salary_standard}',human_specility = '{er.human_specility}',human_hobby = '{er.human_hobby}',
+                human_history_records = '{er.human_history_records}',remark = '{er.remark}',recomandation = '{er.recomandation}',
+                checker = '{er.checker}',check_time = '{er.check_time}',check_status = 1 where res_id = '{er.res_id}'";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        
+
+        public async Task<int> EIUpdateAsync(EngageResume ei)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"update engage_interview set checker = '{ei.checker}', check_time = '{ei.check_time}', pass_checkComment = '{ei.pass_checkComment}' where ein_id = '{ei.ein_id}'";
+                string ss = $@"update engage_resume set pass_checkComment = '{ei.pass_checkComment}' where res_id = '{ei.res_id}'";
+                await con.ExecuteAsync(ss);
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        public async Task<int> ERDeleteAsync(string id)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"delete from engage_resume where res_id = '{id}'";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        public async Task<int> EE(EngageResume ei)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"update engage_interview set pass_checkComment = '{ei.pass_checkComment}' where ein_id = '{ei.ein_id}'";
+                string ss = $@"update engage_resume set pass_checkComment = '{ei.pass_checkComment}' where res_id = '{ei.res_id}'";
+                await con.ExecuteAsync(ss);
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        /// <summary>
+        /// 审核通过
+        /// </summary>
+        /// <param name="ei"></param>
+        /// <returns></returns>
+        public async Task<int> II(EngageResume ei)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string ss = $"select max(human_amount) from engage_major_release where major_name='{ei.human_major_name}'";
+                int mm=con.QueryFirstOrDefault<int>(ss);
+                string xg = $"update engage_major_release set human_amount='{mm-1}' where major_name='{ei.human_major_name}'";
+                con.Execute(xg);
+                string sql = $@"update engage_resume set  pass_passComment = '{ei.pass_passComment}',pass_check_status = '1' where res_id = '{ei.res_id}'";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        /// <summary>
+        /// 审核不通过
+        /// </summary>
+        /// <param name="ei"></param>
+        /// <returns></returns>
+        public async Task<int> IO(EngageResume ei)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"update engage_resume set pass_passComment = '{ei.pass_passComment}',pass_check_status = '0' where res_id = '{ei.res_id}'";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+    }
+}

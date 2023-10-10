@@ -1,0 +1,39 @@
+﻿using DAO;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+
+namespace WebApplication1.Controllers
+{
+    public class HumanResourcesController : Controller
+    {
+        //一级机构设置
+        CFFKDAO cf = new CFFKDAO();
+        //二级机构设置
+        CFSKDAO sk = new CFSKDAO();
+        //三级机构设置
+        CFTKDAO tk = new CFTKDAO();
+        //职位设置
+        ConfigMajorDao cd = new ConfigMajorDao();
+        //职位分类设置
+        ConfigMajorKindDao kd = new ConfigMajorKindDao();
+        //公共属性设置
+        ConfigPublicCharDao cp = new ConfigPublicCharDao();
+        //职位发布登记
+        EngageMajorReleaseDao ed = new EngageMajorReleaseDao();
+        // GET: HumanResources
+        public async Task<ActionResult> HumanRegister()
+        {
+            ViewBag.s = await cf.FirstSelectAsync();
+            ViewBag.ss = await sk.SecondSelectAsync();
+            ViewBag.sss = await tk.ThirdSelectAsync();
+            ViewBag.ssss = await cd.CMSelectAsync();
+            ViewBag.sssss = await kd.CMKSelectAsync();
+            ViewBag.ssssss = await cp.ZCSelectAsync();
+            return View();
+        }
+    }
+}

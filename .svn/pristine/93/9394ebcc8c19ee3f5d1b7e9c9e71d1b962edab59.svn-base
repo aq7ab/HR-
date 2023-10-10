@@ -1,0 +1,324 @@
+﻿
+@{
+    Layout = null;
+    List<Fill> cc = ViewBag.s;
+}
+@using Models
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>hr_middle</title>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <script src="~/javascript/echarts.min.js"></script>
+    <style type="text/css">
+        body {
+            background-color: #F1F2F7;
+            /* background-image: url(../images/11041R35400-19.jpg);
+            background-repeat: no-repeat;
+            background-position: 130% 0;*/
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+
+        .r {
+            font-size: 17px;
+            color: #2A3542;
+            margin-left: 32px;
+            font-weight: bold;
+        }
+
+
+        #uu {
+            margin-left: -58px;
+            margin-top: 29px;
+        }
+
+        li {
+            list-style: none;
+            float: left;
+            width: 360px;
+            height: 140px;
+            background-color: white;
+            border-radius: 3%;
+            margin-left: 45px;
+            border: 2px solid #F0F0F0;
+        }
+
+            li:hover {
+                cursor: pointer;
+                /* transform属性 */
+                transform: translate(0,-15px);
+                transition: all 0.5s ease-out;
+            }
+
+        #zuo {
+            width: 1182px;
+            height: 600px;
+            margin-top: 50px;
+        }
+
+        #yo {
+            width: 360px;
+            height: 600px;
+            margin-top: 50px;
+        }
+
+        #sj {
+            float: right;
+            font-size: 15px;
+            padding-right: 23px;
+        }
+
+        .ss {
+            background-image: url(../../images/用户管理-用户管理.png);
+            background-repeat: no-repeat;
+            background-position: 30px,-19px;
+            background-size: 93px;
+        }
+
+        .ss1 {
+            background-image: url('../../images/suoyoukehu.png');
+            background-repeat: no-repeat;
+            background-position: 30px,-19px;
+            background-size: 88px;
+        }
+
+        .ss2 {
+            background-image: url('../../images/机构信息.png');
+            background-repeat: no-repeat;
+            background-position: 30px,-19px;
+            background-size: 88px;
+        }
+
+        .ss3 {
+            background-image: url('../../images/薪酬调整.png');
+            background-repeat: no-repeat;
+            background-position: 30px,-19px;
+            background-size: 104px;
+        }
+
+        .yh {
+            margin-top: 24px;
+            margin-left: 151px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sz {
+            font-size: 36px;
+            font-weight: 700;
+            margin-left: 158px;
+        }
+
+        .dw {
+            font-size: 19px;
+            font-weight: 700;
+            margin-left: 225px;
+            margin-top: -36px;
+        }
+        .img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-left: 20px;
+            margin-top: 13px;
+        }
+        #div {
+            height: 77px;
+            border-bottom: 1px solid #F1F2F7;
+        }
+        #yo div:last-of-type {
+            border-bottom: 0px;
+        }
+        .name {
+            margin-left: 79px;
+            margin-top: -52px;
+            font-weight: bold;
+           
+        }
+        .qian {
+            margin-left: 76px;
+            margin-top: 6px;
+            color: #9A9B9D;
+
+        }
+        .sj {
+            background-image: url(../../images/时间.png);
+            background-repeat: no-repeat;
+            background-position: 0px,0px;
+            background-size: 28px;
+            float: right;
+            margin-top: -28px;
+            margin-right: 17px;
+        }
+    </style>
+    <script type="text/javascript"
+            src="../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../javascript/jquery.messager.js">
+    </script>
+    <script type="text/javascript">
+        function time() {
+            var tdate = document.getElementById("Tdate");
+            var d = new Date();
+            var y = d.getFullYear();
+            var moth = d.getMonth() + 1;
+            var date = d.getDate();
+            var h = d.getHours();
+            var m = d.getMinutes();
+            var s = d.getSeconds();
+            var hh = 20 - 1 - h;
+            var mm = 60 - 1 - m;
+            var ss = 60 - s;
+            if (hh > 0) {
+                mm = mm + 60 * hh;
+            }
+            if (moth < 10) {
+                moth = "0" + moth;
+            }
+            if (date < 10) {
+                date = "0" + date;
+            }
+            if (h < 10) {
+                h = "0" + h;
+            }
+            if (m < 10) {
+                m = "0" + m;
+            }
+            if (s < 10) {
+                s = "0" + s;
+            }
+            if (mm < 10) {
+                mm = "0" + mm;
+            }
+            if (ss < 10) {
+                ss = "0" + ss;
+            }
+
+            tdate.innerHTML = y + "-" + moth + "-" + date + " " + h + ":" + m + ":" + s;
+
+        }
+        window.onload = time;
+        var out = window.setInterval(time, 1000);
+
+
+
+
+
+    </script>
+</head>
+<body>
+    <div id="app">
+        <p class="r">人力资源管理系统 <span id="sj">当前时间：<span id="Tdate"></span></span> </p>
+        <div id="uu">
+            <ul>
+                <li class="ss">
+                    <div class="yh">User management</div><br />
+                    <span class="sz">@ViewBag.rs</span><div class="dw">（Number）</div>
+                </li>
+                <li class="ss1">
+                    <div class="yh">Human resources</div><br />
+                    <span class="sz">@ViewBag.rc</span><div class="dw">（Number）</div>
+
+                </li>
+                <li class="ss2">
+                    <div class="yh">Institution</div><br />
+                    <span class="sz">@ViewBag.jg</span><div class="dw">（Piece）</div>
+                </li>
+                <li class="ss3">
+                    <div class="yh">Pay</div><br />
+                    <span class="sz">@ViewBag.xc</span><div class="dw">（Single）</div>
+                </li>
+                <li id="zuo">
+                    <div ref="chart" style="width: 1200px;height:600px;"></div>
+                </li>
+                <li id="yo">
+                    <p style="font-weight: bold; font-size: 18px; margin-left: 24px;">Salary leaderboard</p>
+                    @foreach (Fill cm in cc)
+                    {
+                        <div id="div">
+                          
+                            <img src="~/images/@cm.human_picture"  class="img"/>
+                            <div class="name">@cm.human_name</div>
+                            <div class="qian">@cm.paid_salary_sum</div>
+                            <div class="sj">
+                               
+                            <span style="margin-left: 30px; color: black;">@cm.regist_time.AsDateTime().Year-@cm.regist_time.AsDateTime().Month-@cm.regist_time.AsDateTime().Day</span>
+                            </div>
+                        </div>
+                    }
+
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list1: [],
+            Regist_time: [],
+            Salary_paid_sum: []
+
+        },
+        methods: {
+            fill() {
+                axios.get('/Home/Xx')
+                    .then(res => {
+
+                        this.list1 = res.data;
+                        console.log(this.list1);
+                        for (var i = 0; i < this.list1.length; i++) {
+                            this.Regist_time[i] = this.sj(this.list1[i].Regist_time);
+                            this.Salary_paid_sum[i] = this.list1[i].Salary_paid_sum;
+                        }
+                        const myChart = echarts.init(this.$refs.chart); // 实例化echarts对象
+                        option = {
+                            xAxis: {
+                                type: 'category',
+                                data: this.Regist_time
+
+                            },
+                            yAxis: {
+                                type: 'value'
+                            },
+
+                            series: [
+                                {
+                                    data: this.Salary_paid_sum,
+                                    type: 'bar',
+                                    color: '#2A3542',
+
+                                }
+                            ]
+                        };
+                        myChart.setOption(option);
+
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+
+            },
+            sj(value) {
+                var dt = new Date(parseInt(value.replace("/Date(", "").replace(")/", ""), 10));
+                return dt.getFullYear() + "年" + (dt.getMonth() + 1) + "月" + dt.getDate() + "日";
+            },
+            
+        },
+        mounted: function () {
+            this.fill();
+        },
+       
+       
+    })
+</script>
+

@@ -1,0 +1,365 @@
+﻿
+@{
+    Layout = null;
+    List<CFFK> cf = ViewBag.s;
+    List<CFSK> sk = ViewBag.ss;
+    List<CFTK> tk = ViewBag.sss;
+    List<ConfigMajor> cm = ViewBag.ssss;
+    List<ConfigMajorKind> cc = ViewBag.sssss;
+}
+@using Models
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>My JSP 'index.jsp' starting page</title>
+
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #D4F8D4;
+        }
+        .TD_STYLE2 {
+            background-color: #D4F8D4 !important;
+        }
+        .TD_STYLE1 {
+            background-color: #D4F8D4 !important;
+        }
+        .TABLE_STYLE1 {
+            background-color: #D4F8D4 !important;
+        }
+    </style>
+    <link rel="stylesheet"
+          href="../../../css/table.css" type="text/css">
+    <link rel="stylesheet"
+          href="../../../css/cwcalendar.css" type="text/css">
+    <script type="text/javascript"
+            src="../../../javascript/comm/comm.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/list.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/calendar-ch.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/locate.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/select.js">
+    </script>
+
+    <script type="text/javascript">
+        window.onload = check;
+        function tick() {
+            var now = new Date();
+            var hours, minutes, seconds, noon;
+            var intHours, intMinutes, intSeconds;
+            intHours = now.getHours();
+            intMinutes = now.getMinutes();
+            intSeconds = now.getSeconds();
+            if (intHours < 24) {
+                hours = intHours + ":";
+                noon = "A.M.";
+            } else {
+                intHours = intHours - 24;
+                hours = intHours + ":";
+                noon = "P.M.";
+            }
+            if (intMinutes < 10) {
+                minutes = "0" + intMinutes + ":";
+            } else {
+                minutes = intMinutes + ":";
+            }
+            if (intSeconds < 10) {
+                seconds = "0" + intSeconds + " ";
+            } else {
+                seconds = intSeconds + " ";
+            }
+            timeString = hours + minutes + seconds;
+            var now = new Date();
+            document.getElementById("nowTime").value = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " " + timeString;
+            window.setTimeout("tick();", 1000);
+        }
+
+        //load事件
+        function check() {
+            //获得系统当前时间的方法
+            tick();
+        }
+    </script>
+</head>
+<body>
+
+    <div id="app">
+
+        <el-form ref="form" :model="emajorRelease" :rules="rules">
+            <table width="100%">
+                <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                    <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">招聘管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">职位发布管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item>职位发布登记</el-breadcrumb-item>
+                </el-breadcrumb>
+                
+                <tr>
+                    <td align="right">
+                        <input type="button" value="提交" v-on:click="tj" class="BUTTON_STYLE1">
+                        <input type="reset" value="清除" class="BUTTON_STYLE1">
+                    </td>
+                </tr>
+            </table>
+                <table width="100%" border="1" cellpadding=0 cellspacing=1
+                       bordercolorlight=#848284 bordercolordark=#eeeeee
+                       class="TABLE_STYLE1">
+                    <tr>
+                        <td class="TD_STYLE1" width="11%">
+                            I级机构
+                        </td>
+                        <td width="14%" class="TD_STYLE2">
+                            <el-select v-model="valuefk" placeholder="--请选择--" 
+                                        name="emajorRelease.firstKindId" id="firstKindId" class="SELECT_STYLE1">
+                                @foreach (CFFK cfk in cf)
+                                {
+                                    <el-option value="@cfk.First_kind_name" label='@cfk.First_kind_name'>@cfk.First_kind_name</el-option>
+                                }
+                            </el-select>
+                        </td>
+                        <td width="11%" class="TD_STYLE1">
+                            II级机构
+                        </td>
+                        <td width="14%" class="TD_STYLE2">
+                            <el-select v-model="valuesk" placeholder="--请选择--"
+                                       name="emajorRelease.secondKindId" id="secondKindId" class="SELECT_STYLE1">
+                                @foreach (CFSK csk in sk)
+                                {
+                                    <el-option value="@csk.Second_kind_name" label='@csk.Second_kind_name'>@csk.Second_kind_name</el-option>
+                                }
+                            </el-select>
+                        </td>
+                        <td width="11%" class="TD_STYLE1">
+                            III级机构
+                        </td>
+                        <td class="TD_STYLE2">
+                            <el-select v-model="valuecf" placeholder="--请选择--"
+                                       name="emajorRelease.thirdKindId" id="thirdKindId" class="SELECT_STYLE1">
+                                @foreach (CFTK ctk in tk)
+                                {
+                                    <el-option value="@ctk.Third_kind_name" label='@ctk.Third_kind_name'>@ctk.Third_kind_name</el-option>
+                                }
+                            </el-select>
+                        </td>
+                        <td width="11%" class="TD_STYLE1">
+                            招聘类型
+                        </td>
+                        <td class="TD_STYLE2" colspan="2">
+                            <select v-model="emajorRelease.engageType" id="engageType" class="SELECT_STYLE1">
+                                <option value="">--请选择--</option>
+
+                                <option value="校园招聘">校园招聘</option>
+
+                                <option value="社会招聘">社会招聘</option>
+
+                            </select>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="TD_STYLE1">
+                            职位分类
+                        </td>
+                        <td class="TD_STYLE2">
+                            <el-select v-model="valuemkid" placeholder="--请选择--"
+                                       name="emajorRelease.majorKindId" id="majorKindId" class="SELECT_STYLE1">
+                                @foreach (ConfigMajorKind mk in cc)
+                                {
+                                    <el-option value="@mk.major_kind_name" label='@mk.major_kind_name'>@mk.major_kind_name</el-option>
+                                }
+                            </el-select>
+                        </td>
+                        <td class="TD_STYLE1">
+                            职位名称
+                        </td>
+                        <td class="TD_STYLE2">
+                            <el-select v-model="valuemid" placeholder="--请选择--"
+                                       name="emajorRelease.majorId" id="majorId" class="SELECT_STYLE1">
+                                @foreach (ConfigMajor cmm in cm)
+                                {
+                                    <el-option value="@cmm.major_name" label='@cmm.major_name'>@cmm.major_name</el-option>
+                                }
+                            </el-select>
+                        </td>
+                        <td class="TD_STYLE1">
+                            招聘人数
+                        </td>
+                        <td class="TD_STYLE2">
+                            <el-input type="text" v-model="emajorRelease.humanAmount" id="humanAmount" class="INPUT_STYLE2">
+                        </td>
+                        <td class="TD_STYLE1">
+                            截止日期
+                        </td>
+                        <td class="TD_STYLE2">
+                            <div class="block">
+                                <el-date-picker v-model="emajorRelease.date"
+                                                type="datetime"
+                                                class="INPUT_STYLE2"
+                                                id="date_start"
+                                                placeholder="选择日期时间"
+                                                align="right"
+                                                name="item.str_startTime">
+                                </el-date-picker>
+                            </div>
+                            @*<el-input type="text" name="item.str_startTime" readonly
+                                      class="INPUT_STYLE2" id="date_start" v-model="emajorRelease.date">*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="TD_STYLE1">
+                            登记人
+                        </td>
+                        <td class="TD_STYLE2">
+                            <el-input type="text" v-model="emajorRelease.register" value="admin" class="INPUT_STYLE2">
+                        </td>
+                        <td class="TD_STYLE1">
+                            登记时间
+                        </td>
+                        <td class="TD_STYLE2">
+
+                            <el-input type="text" v-model="emajorRelease.registTime"
+                                   id="nowTime" readonly="readonly"
+                                   class="INPUT_STYLE2">
+                        </td>
+
+                        <td>&nbsp; </td>
+                        <td>&nbsp; </td>
+                        <td>&nbsp; </td>
+                        <td>&nbsp; </td>
+
+                    </tr>
+                    <tr>
+                        <td class="TD_STYLE1">
+                            职位描述
+                        </td>
+                        <td class="TD_STYLE2" colspan="8">
+                            <el-form-item prop="majorDescribe">
+                                <el-input v-model="emajorRelease.majorDescribe" type="textarea" rows="4" class="TEXTAREA_STYLE1"></el-input>
+                            </el-form-item>
+                            @*<textarea v-model="emajorRelease.majorDescribe" rows="4" cols="80" class="TEXTAREA_STYLE1"></textarea>*@
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td class="TD_STYLE1">
+                            招聘要求
+                        </td>
+                        <td class="TD_STYLE2" colspan="8">
+                            <el-form-item prop="engageRequired">
+                                <el-input v-model="emajorRelease.engageRequired" type="textarea" rows="4"  class="TEXTAREA_STYLE1"></el-input>
+                            </el-form-item>
+                            @*<textarea v-model="emajorRelease.engageRequired" rows="4" cols="80" class="TEXTAREA_STYLE1"></textarea>*@
+                        </td>
+
+                    </tr>
+                </table>
+            </el-form>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                emajorRelease: {
+                    engageRequired: "",
+                    majorDescribe: "",
+                    registTime: "",
+                    register: "",
+                    date: "",
+                    humanAmount: "",
+                    engageType: "",
+                    firstKindId: "",
+                    majorId: "",
+                    majorKindId: "",
+                    thirdKindId: "",
+                    secondKindId: "",
+                },
+                valuemid: "",
+                valuemkid: "",
+                valuecf: "",
+                valuesk: "",
+                valuefk: "",
+                options: [],
+                rules: {
+                    humanAmount: [{ required: true, message: '招聘人数不可为空！', trigger: 'blur' }],
+                    date: [{ required: true, message: '截止日期不可为空！', trigger: 'blur' }],
+                }
+            },
+            methods: {
+                tj: function () {
+                    var t = this;
+                    t.$refs.form.validate(valid => {
+                        if (valid) {
+                            axios.get('/Recruit/EMAdd', {
+                                params: {
+                                    first_kind_name: t.valuefk,
+                                    second_kind_name: t.valuesk,
+                                    third_kind_name: t.valuecf,
+                                    major_kind_name: t.valuemkid,
+                                    major_name: t.valuemid,
+                                    human_amount: t.emajorRelease.humanAmount,
+                                    engage_type: t.emajorRelease.engageType,
+                                    deadline: t.emajorRelease.date,
+                                    register: t.emajorRelease.register,
+                                    changer: t.emajorRelease.changer,
+                                    regist_time: t.emajorRelease.registTime,
+                                    major_describe: t.emajorRelease.majorDescribe,
+                                    engage_required: t.emajorRelease.engageRequired
+                                }
+                            })
+                                .then(res => {
+                                    if (res.data > 0) {
+                                        alert("添加成功！")
+                                        location.href = '/Recruit/PositionRegister'
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                        } else {
+                            alert("请填写完整信息！")
+                        }
+                    })
+                },
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '今天',
+                        onClick(picker) {
+                            picker.$emit('pick', new Date());
+                        }
+                    }, {
+                        text: '昨天',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', date);
+                        }
+                    }, {
+                        text: '一周前',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', date);
+                        }
+                    }]
+                },
+            }
+        })
+    </script>
+</body>
+
+</html>

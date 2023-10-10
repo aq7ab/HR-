@@ -1,0 +1,350 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>My JSP 'position-change.jsp' starting page</title>
+
+    <link rel="stylesheet"
+          href="../../../css/table.css" type="text/css">
+    <link rel="stylesheet"
+          href="../../../css/cwcalendar.css" type="text/css">
+    <script type="text/javascript"
+            src="../../../javascript/comm/comm.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/list.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/calendar-ch.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/locate.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/select.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/time.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #D4F8D4;
+        }
+
+        .TD_STYLE2 {
+            background-color: #D4F8D4 !important;
+        }
+
+        .TD_STYLE1 {
+            background-color: #D4F8D4 !important;
+        }
+
+        .TABLE_STYLE1 {
+            background-color: #D4F8D4 !important;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = check;
+        function tick() {
+            var now = new Date();
+            var hours, minutes, seconds, noon;
+            var intHours, intMinutes, intSeconds;
+            intHours = now.getHours();
+            intMinutes = now.getMinutes();
+            intSeconds = now.getSeconds();
+            if (intHours < 24) {
+                hours = intHours + ":";
+                noon = "A.M.";
+            } else {
+                intHours = intHours - 24;
+                hours = intHours + ":";
+                noon = "P.M.";
+            }
+            if (intMinutes < 10) {
+                minutes = "0" + intMinutes + ":";
+            } else {
+                minutes = intMinutes + ":";
+            }
+            if (intSeconds < 10) {
+                seconds = "0" + intSeconds + " ";
+            } else {
+                seconds = intSeconds + " ";
+            }
+            timeString = hours + minutes + seconds;
+            var now = new Date();
+            document.getElementById("nowTime").value = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " " + timeString;
+            window.setTimeout("tick();", 1000);
+        }
+
+        //load事件
+        function check() {
+            //获得系统当前时间的方法
+            tick();
+        }
+    </script>
+
+    <script type="text/javascript">
+        function mySubmit() {
+            document.humanfileForm.submit();
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        @{ Models.EngageMajorRelease em = ViewBag.s;}
+        <el-form ref="form" :model="ruleForm" :rules="rules">
+            <table width="100%">
+                <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                    <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">招聘管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">职位发布管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item>职位发布变更</el-breadcrumb-item>
+                </el-breadcrumb>
+                
+                <tr>
+
+                    <td align="right">
+                        <input type="button" value="提交" v-on:click="tj" class="BUTTON_STYLE1">
+                        <input type="reset" value="清除" class="BUTTON_STYLE1"
+                               onclick="history.back();">
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td class="TD_STYLE1" width="11%">
+                        I级机构
+                    </td>
+                    <td width="14%" class="TD_STYLE2">
+                        
+                        <el-form-item prop="yj">
+                            <el-input v-model="ruleForm.yj" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td width="11%" class="TD_STYLE1">
+                        II级机构
+                    </td>
+                    <td width="14%" class="TD_STYLE2">
+                        <el-form-item prop="ej">
+                            <el-input v-model="ruleForm.ej" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td width="11%" class="TD_STYLE1">
+                        III级机构
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="sj">
+                            <el-input v-model="ruleForm.sj" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td width="11%" class="TD_STYLE1">
+                        招聘类型
+                    </td>
+                    <td class="TD_STYLE2" colspan="2">
+
+                        <select v-model="ruleForm.lx" id="engageType" class="SELECT_STYLE1">
+
+                            <option value="校园招聘" selected>校园招聘</option>
+
+                            <option value="社会招聘" selected>社会招聘</option>
+
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        职位分类
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="fl">
+                            <el-input v-model="ruleForm.fl" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        职位名称
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="zw">
+                            <el-input v-model="ruleForm.zw" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        招聘人数
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="rs">
+                            <el-input v-model="ruleForm.rs"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        截止日期
+                    </td>
+                    <td class="TD_STYLE2">
+
+                        <el-date-picker v-model="ruleForm.date"
+                                        type="datetime"
+                                        class="INPUT_STYLE2"
+                                        id="date_start"
+                                        placeholder="选择日期时间"
+                                        align="right"
+                                        name="item.str_startTime">
+                        </el-date-picker>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        变更人
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="bg">
+                            <el-input v-model="ruleForm.bg"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        变更时间
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="bs">
+                            <el-input v-model="ruleForm.bs"></el-input>
+                        </el-form-item>
+                    </td>
+
+                    <td>&nbsp; </td>
+                    <td>&nbsp; </td>
+                    <td>&nbsp; </td>
+                    <td>&nbsp; </td>
+
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        职位描述
+                    </td>
+                    <td class="TD_STYLE2" colspan="8">
+                        <el-form-item prop="ms">
+                            <el-input v-model="ruleForm.ms" type="textarea" rows="4" class="TEXTAREA_STYLE1"></el-input>
+                        </el-form-item>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        招聘要求
+                    </td>
+                    <td class="TD_STYLE2" colspan="8">
+                        <el-form-item prop="yq">
+                            <el-input v-model="ruleForm.yq" type="textarea" rows="4" class="TEXTAREA_STYLE1"></el-input>
+                        </el-form-item>
+                    </td>
+
+                </tr>
+            </table>
+            </el-form>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                ruleForm: {
+                    yj: "",
+                    ej: "",
+                    sj: "",
+                    lx: "",
+                    fl: "",
+                    zw: "",
+                    rs: "",
+                    date: "",
+                    bg: "",
+                    bs: "",
+                    ms: "",
+                    yq: "",
+                    id:"",
+                },
+                rules: {
+
+
+                    rs: [
+                        { required: true, message: ' 招聘人数不能为空', trigger: 'blur' }
+                    ],
+                    bg: [
+                        { required: true, message: ' 变更人不能为空', trigger: 'blur' }
+                    ],
+                },
+            },
+            methods: {
+                fill: function () {
+                    this.ruleForm.yj = @Html.Raw(Json.Encode(em.first_kind_name));
+                    this.ruleForm.ej = @Html.Raw(Json.Encode(em.second_kind_name));
+                    this.ruleForm.sj = @Html.Raw(Json.Encode(em.third_kind_name));
+                    this.ruleForm.lx = @Html.Raw(Json.Encode(em.engage_type));
+                    this.ruleForm.fl = @Html.Raw(Json.Encode(em.major_kind_name));
+                    this.ruleForm.zw = @Html.Raw(Json.Encode(em.major_name));
+                    this.ruleForm.rs = @Html.Raw(Json.Encode(em.human_amount));
+                    this.ruleForm.date = @Html.Raw(Json.Encode(em.deadline));
+                    this.ruleForm.bg = @Html.Raw(Json.Encode(em.register));
+                    this.ruleForm.bs = @Html.Raw(Json.Encode(em.regist_time));
+                    this.ruleForm.ms = @Html.Raw(Json.Encode(em.major_describe));
+                    this.ruleForm.yq = @Html.Raw(Json.Encode(em.engage_required));
+                    this.ruleForm.id = @Html.Raw(Json.Encode(em.mre_id));
+                },
+                tj: function () {
+                    var t = this;
+                    t.$refs.form.validate(valid => {
+                        if (valid) {
+                            axios.get('/Recruit/EMDUpdate', {
+                                params: {
+                                    first_kind_name: t.ruleForm.yj,
+                                    second_kind_name: t.ruleForm.ej,
+                                    third_kind_name: t.ruleForm.sj,
+                                    engage_type: t.ruleForm.lx,
+                                    major_kind_name: t.ruleForm.fl,
+                                    major_name: t.ruleForm.zw,
+                                    human_amount: t.ruleForm.rs,
+                                    deadline: t.ruleForm.date,
+                                    register: t.ruleForm.bg,
+                                    regist_time: t.ruleForm.bs,
+                                    major_describe: t.ruleForm.ms,
+                                    engage_required: t.ruleForm.yq,
+                                    mre_id: t.ruleForm.id
+                                }
+                            })
+                                .then(res => {
+                                    if (res.data > 0) {
+                                        alert("修改成功！")
+                                        location.href = '/Recruit/PositionChangeUpdate'
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                        } else {
+                            alert("请填写完整信息！")
+                        }
+                    })
+                }
+            },
+            mounted: function () {
+                this.fill();
+            },
+        })
+    </script>
+</body>
+
+</html>

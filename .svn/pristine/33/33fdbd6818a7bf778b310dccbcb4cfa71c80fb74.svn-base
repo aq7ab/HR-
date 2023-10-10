@@ -1,0 +1,97 @@
+﻿using Dapper;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAO
+{
+    public class EngageMajorReleaseDao
+    {
+        string str = "Data Source=.;Initial Catalog=HR_DB;Integrated Security=True";
+
+        /// <summary>
+        /// 职位发布登记
+        /// </summary>
+        /// <param name="em"></param>
+        /// <returns></returns>
+        public async Task<int> EMRInsertAsync(EngageMajorRelease em)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string fd = $@"select first_kind_id from config_file_first_kind where first_kind_name = '{em.first_kind_name}'";
+                string fid = await con.QueryFirstAsync<string>(fd);
+
+                string sd = $@"select second_kind_id from config_file_second_kind where second_kind_name = '{em.second_kind_name}'";
+                string sid = await con.QueryFirstAsync<string>(sd);
+
+                string td = $@"select third_kind_id from config_file_third_kind where third_kind_name = '{em.third_kind_name}'";
+                string tid = await con.QueryFirstAsync<string>(td);
+
+                string mdk = $@"select major_kind_id from config_major_kind where major_kind_name = '{em.major_kind_name}'";
+                string midk = await con.QueryFirstAsync<string>(mdk);
+
+                string md = $@"select major_id from config_major where major_name = '{em.major_name}'";
+                string mid = await con.QueryFirstAsync<string>(md);
+
+                string sql = $@"insert into engage_major_release
+(first_kind_id, first_kind_name, second_kind_id, second_kind_name, third_kind_id, third_kind_name, major_kind_id, major_kind_name, major_id, major_name, human_amount, engage_type, deadline, register, changer, regist_time, change_time, major_describe, engage_required)
+ values('{fid}','{em.first_kind_name}','{sid}','{em.second_kind_name}','{tid}','{em.third_kind_name}','{midk}','{em.major_kind_name}','{mid}','{em.major_name}','{em.human_amount}','{em.engage_type}','{em.deadline}','{em.register}','{em.changer}','{em.regist_time}','{em.change_time}','{em.major_describe}','{em.engage_required}')";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        /// <summary>
+        /// 职位发布变更
+        /// </summary>
+        /// <param name="emr"></param>
+        /// <returns></returns>
+        public async Task<FenYe<EngageMajorRelease>> EMRSelectAsync(FenYe<EngageMajorRelease> emr)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@pageSize", emr.PageSize);
+                dd.Add("@keyName", "mre_id");
+                dd.Add("@tableName", "engage_major_release");
+                dd.Add("@currentPage", emr.CurrentPage);
+                dd.Add("@row", direction: ParameterDirection.Output, dbType: DbType.Int32);
+                string sql = "exec [dbo].[FenYe] @pageSize, @keyName, @tableName, @currentPage, @row out";
+                emr.List = await con.QueryAsync<EngageMajorRelease>(sql, dd);
+                emr.Rows = dd.Get<int>("row");
+                return emr;
+            }
+        }
+        public async Task<EngageMajorRelease> EMRSelectIdAsync(int id)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"select * from engage_major_release where mre_id = '{id}'";
+                return await con.QueryFirstAsync<EngageMajorRelease>(sql);
+            }
+        }
+        public async Task<int> EMRUpdateAsync(EngageMajorRelease ee)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"update engage_major_release set first_kind_name = '{ee.first_kind_name}',
+                    second_kind_name = '{ee.second_kind_name}',third_kind_name = '{ee.third_kind_name}',
+major_kind_name = '{ee.major_kind_name}',major_name = '{ee.major_name}',engage_type = '{ee.engage_type}',human_amount = '{ee.human_amount}',deadline = '{ee.deadline}',
+register = '{ee.register}',regist_time = '{ee.regist_time}',major_describe = '{ee.major_describe}',engage_required = '{ee.engage_required}' where mre_id = '{ee.mre_id}'";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+
+        public async Task<int> EMRDeleteAsync(int id)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"delete from engage_major_release where mre_id = '{id}'";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+    }
+}

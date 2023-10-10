@@ -1,0 +1,402 @@
+﻿
+@{
+    Layout = null;
+    List<Models.Fill> cs = ViewBag.h;
+}
+
+<!DOCTYPE html>
+@using Models
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../css/table.css" type="text/css" />
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <script src="~/javascript/echarts.min.js"></script>
+    <title>人力资源薪酬发放登记</title>
+    <style type="text/css">
+
+        .style3 {
+            color: #0000CC
+        }
+
+        td {
+            text-align: center
+        }
+
+        #a {
+            text-decoration: none;
+            color: #606266
+        }
+        body {
+            background-color: #F1F2F7;
+        }
+        .INPUT_STYLE2 {
+            BACKGROUND-COLOR: #F1F2F7;
+            width: 100%;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    @{ }
+    <div id="app">
+        <form>
+            <table width="100%">
+                <tr>
+                    <td colspan="2" style="text-align: left">
+                        <font color="black">
+
+                            <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                                <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                                <el-breadcrumb-item><a href="#">薪酬标准管理</a></el-breadcrumb-item>
+                                <el-breadcrumb-item>薪酬发放登记</el-breadcrumb-item>
+                            </el-breadcrumb>
+                        </font>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: right;">
+                        <input type="button" value="提交" class="BUTTON_STYLE1" v-on:click="tj">
+                        <input type="button" value="返回" onclick="javascript:window.history.back();" class="BUTTON_STYLE1">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left">
+                        薪酬单编号：@ViewBag.bh
+                        <input type="hidden" name="salaryGrant.salaryGrantId" value="HS1353753198460">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left">
+                        机构：
+                        @ViewBag.name
+
+
+
+
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left">
+                        本机构总人数:{{len}}
+                        <input type="hidden" name="salaryGrant.humanAmount" value="5">
+                        ，基本薪酬总数:{{je(zong)}}<input type="hidden" name="salaryGrant.salaryStandardSum" value="139823.0" />
+                        ，实发总额:{{shif}}
+                        <input type="hidden" id="ii" value="" />
+
+                    </td>
+                    <td style="text-align: right;">
+                        登记人:<input type="text" id="dlr" size="8" readonly="readonly">
+                        登记时间：<span id="Tdate"></span>
+                        <input type="hidden" name="salaryGrant.registTime" id="Tdate2">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: left">
+                        &nbsp;
+
+                    </td>
+                </tr>
+            </table>
+
+            <el-table :data="table"
+                      stripe
+                      style="width: 100%; background-color: #F1F2F7;">
+                <el-table-column label="序号">
+                    <template slot-scope="scope">
+                        {{scope.$index+1}}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="human_id"
+                                 label="档案编号">
+
+                </el-table-column>
+                <el-table-column prop="human_name"
+                                 label="姓名">
+
+
+
+
+                </el-table-column>
+                <el-table-column label="薪酬基本明细">
+                    <template slot-scope="scope">
+                        <a id="a" v-on:click="mx(scope.row.salary_standard_id)">详细内容</a>
+                    </template>
+                </el-table-column>
+                <el-table-column label="奖励金额">
+                    <template slot-scope="scope">
+                        <input type="text" name="grantDetails[0].bounsSum" :id="'bounsSum'+(scope.$index+1)" value="0.00" v-on:keyup="onKeyPress((scope.$index+1))" class="INPUT_STYLE2" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="销售绩效总额">
+                    <template slot-scope="scope">
+                        <input type="text" name="grantDetails[0].saleSum" :id="'saleSum'+(scope.$index+1)" value="0.00" v-on:keyup="onKeyPress((scope.$index+1))" class="INPUT_STYLE2" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="应扣金额">
+                    <template slot-scope="scope">
+                        <input type="text" name="grantDetails[0].deductSum" :id="'deductSum'+(scope.$index+1)" value="0.00" v-on:keyup="onKeyPress((scope.$index+1))" class="INPUT_STYLE2" />
+                    </template>
+                </el-table-column>
+                <el-table-column label="实发金额">
+                    <template slot-scope="scope">
+                        <input type="text" name="grantDetails[0].salaryPaidSum" readonly="readonly" :id="'salaryPaidSum'+(scope.$index+1)" :value="scope.row.paid_salary_sum" class="INPUT_STYLE2" />
+                        <input type="hidden" :id="'salaryStandardSum'+(scope.$index+1)" :value="je(scope.row.paid_salary_sum)" />
+                        <input type="hidden" :id="'name'+(scope.$index+1)" :value="scope.row.human_name" />
+                        <input type="hidden" :id="'dang'+(scope.$index+1)" :value="scope.row.human_id" />
+                        <input type="hidden" :id="'bz'+(scope.$index+1)" :value="scope.row.paid_salary_sum" />
+                    </template>
+                </el-table-column>
+
+            </el-table>
+
+        </form>
+        <el-dialog title="薪酬标准单详细信息"
+                   :visible.sync="zj"
+                   width="45%"
+                   :before-close="handleClose">
+            <div ref="chart" style="width: 600px;height:400px;"></div>
+            <el-button size="small" round style="margin-left: 621px; margin-top: 38px;" v-on:click="handleClose">关闭</el-button>
+        </el-dialog>
+
+    </div>
+    <SCRIPT type="text/javascript">
+
+
+
+        function time() {
+            var tdate = document.getElementById("Tdate");
+            var d = new Date();
+            var y = d.getFullYear();
+            var moth = d.getMonth() + 1;
+            var date = d.getDate();
+            var h = d.getHours();
+            var m = d.getMinutes();
+            var s = d.getSeconds();
+            var hh = 20 - 1 - h;
+            var mm = 60 - 1 - m;
+            var ss = 60 - s;
+            if (hh > 0) {
+                mm = mm + 60 * hh;
+            }
+            if (moth < 10) {
+                moth = "0" + moth;
+            }
+            if (date < 10) {
+                date = "0" + date;
+            }
+            if (h < 10) {
+                h = "0" + h;
+            }
+            if (m < 10) {
+                m = "0" + m;
+            }
+            if (s < 10) {
+                s = "0" + s;
+            }
+            if (mm < 10) {
+                mm = "0" + mm;
+            }
+            if (ss < 10) {
+                ss = "0" + ss;
+            }
+
+            tdate.innerHTML = y + "-" + moth + "-" + date + " " + h + ":" + m + ":" + s;
+            document.getElementById("Tdate2").value = tdate.innerHTML;
+        }
+        window.onload = time;
+        var out = window.setInterval(time, 1000);
+    </SCRIPT>
+</body>
+</html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            table: [],
+           bh:"",
+            shif: 0,
+            zong: 0,
+            len: 0,
+            name: "",
+            drl: "",
+            first_kind_id: "",
+            first_kind_name: "",
+            second_kind_id: "",
+            second_kind_name: "",
+            third_kind_id: "",
+            third_kind_name:"",
+            jin:[],
+
+            list1:[],
+            zj: false,
+            Item_name: [],
+            Salary: []
+
+        },
+        methods: {
+            je(val) {
+                return Number(val).toFixed(2);
+            },
+            fill: function () {
+                this.table =@Html.Raw(Json.Encode(cs));
+               
+                this.bh =@Html.Raw(Json.Encode(ViewBag.bh));
+                this.drl =@Html.Raw(Json.Encode(ViewBag.u.U_name));
+                document.getElementById("dlr").value = this.drl;
+                for (let i = 0; i < this.table.length; i++) {
+
+                    this.zong += this.table[i].salary_sum;
+                    this.shif += this.table[i].paid_salary_sum;
+                    this.len = this.table.length;
+                    this.first_kind_id = this.table[0].first_kind_id;
+                    this.first_kind_name = this.table[0].first_kind_name;
+                    this.second_kind_id = this.table[0].second_kind_id;
+                    this.second_kind_name = this.table[0].second_kind_name;
+                    this.third_kind_id = this.table[0].third_kind_id;
+                    this.third_kind_name = this.table[0].third_kind_name;
+                }
+            },
+            handleClose() {
+                this.zj = false;
+            },
+            mx(i) {
+                this.zj = true;
+                axios.get('/SalaryGrant/Xx', {
+                    params: {
+                        id:i
+                    }
+                })
+                    .then(res => {
+                        this.list1 = res.data;
+                        console.log(this.list1);
+                        for (var i = 0; i < this.list1.length; i++) {
+                            this.Item_name[i] = this.list1[i].Item_name;
+                            this.Salary[i] = this.list1[i].Salary;
+                        }
+                        const myChart = echarts.init(this.$refs.chart); // 实例化echarts对象
+                        option = {
+                            xAxis: {
+                                type: 'category',
+                                data: this.Item_name,
+                            },
+                            yAxis: {
+                                type: 'value'
+                            },
+                            series: [
+                                {
+                                    data: this.Salary,
+                                    type: 'bar',
+                                    color: '#2A3542'
+                                }
+                            ]
+                        };
+                        myChart.setOption(option);
+
+
+
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            },
+            onKeyPress: function (i) {
+
+                var size = this.table.length;
+
+                var bounsSum = document.getElementById("bounsSum" + i);
+                var saleSum = document.getElementById("saleSum" + i);
+                var deductSum = document.getElementById("deductSum" + i);
+                var salaryPaidSum = document.getElementById("salaryPaidSum" + i);
+                if (isNaN(bounsSum.value) || bounsSum.value < 0) {
+                    alert("金额填写错误!");
+                    bounsSum.value = "0.00";
+                    return;
+                }
+                if (isNaN(saleSum.value) || saleSum.value < 0) {
+                    alert("金额填写错误!");
+                    saleSum.value = "0.00";
+                    return;
+                }
+                if (isNaN(deductSum.value) || deductSum.value < 0) {
+                    alert("金额填写错误!");
+                    deductSum.value = "0.00";
+                    return;
+                }
+                salaryPaidSum.value = Number(bounsSum.value) + Number(saleSum.value) - Number(deductSum.value) + Number(document.getElementById("salaryStandardSum" + i).value); ;
+
+                var sum = 0;
+                for (var j = 1; j <= size; j++) {
+                    sum = Number(sum) + Number(document.getElementById("salaryPaidSum" + j).value);
+                }
+                this.shif = this.je(sum);
+                document.getElementById("ii").value = sum;
+               
+            },
+            tj() {
+                var tt = document.getElementById("Tdate").innerHTML;
+                for (let i = 1; i <=this.table.length; i++) {
+               
+                    this.jin.push({
+                        Bouns_sum: document.getElementById("bounsSum" + i).value,
+                        Sale_sum: document.getElementById("saleSum" + i).value,
+                        Deduct_sum: document.getElementById("deductSum" + i).value,
+                        Salary_paid_sum: document.getElementById("salaryPaidSum" + i).value,
+                        Salary_standard_sum: document.getElementById("bz" + i).value,
+                        Human_name: document.getElementById("name" + i).value,
+                        Human_id: document.getElementById("dang" + i).value,
+                        Salary_grant_id: this.bh
+                    });
+                }
+
+                var ii = document.getElementById("ii").value;
+               
+                axios.post('/SalaryGrant/Tian', {
+                    
+                        salary_grant_id: this.bh,
+                        first_kind_id: this.first_kind_id,
+                        first_kind_name: this.first_kind_name,
+                        second_kind_id: this.second_kind_id,
+                        second_kind_name: this.second_kind_name,
+                        third_kind_id: this.third_kind_id,
+                        third_kind_name: this.third_kind_name,
+                        human_amount: this.len,
+                    salary_standard_sum: this.zong,
+                    salary_paid_sum: ii,
+                        register: this.drl,
+                        regist_time: tt,
+                        gg: this.jin
+                    
+                })
+                    .then(res => {
+                        if (res.data > 0) {
+                            alert("添加成功！");
+                            location.href = '/SalaryGrant/Check_list';
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+               
+               
+            }
+
+        },
+        mounted: function () {
+            this.fill();
+        },
+
+    })
+</script>
+
+
+

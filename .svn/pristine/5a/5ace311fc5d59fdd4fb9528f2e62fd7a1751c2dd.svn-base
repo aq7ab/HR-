@@ -1,0 +1,132 @@
+﻿
+@{
+    Layout = null;
+  
+}
+@using Models
+<!DOCTYPE html>
+
+<html>
+@{ User s = ViewBag.u;}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet"
+          href="../css/table.css" type="text/css">
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            font-family: 微软雅黑;
+        }
+
+        .u {
+            height: inherit;
+            float: right !important;
+          
+        }
+
+        .img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+        .img1 {
+            position: relative;
+            top: -8px;
+            width: 20px;
+            height: 20px;
+        }
+        li {
+            height: 100%;
+            display: inline-block;
+            position: relative;
+          
+        }
+        a {
+            color: #565656;
+            text-align: center;
+            padding: 0 22px;
+            text-decoration: none;
+        }
+       
+        li:hover {
+            box-shadow: 0px 27px #2A3542;
+        }
+        #vv {
+            width: 200px;
+            height: 100px;
+            background: #2A3542 ;
+            float: left !important;
+        }
+        #dd {
+            position: relative;
+            top: 22px;
+            width: 118px;
+            height: 20px;
+            float: right;
+            left: 70px;
+            font-weight: bold;
+            font-size: 15px;
+            color: #2A3542
+        }
+    </style>
+</head>
+<body topmargin="0" leftmargin="0">
+    <div id="app">
+        <div id="vv">
+            <img src="~/images/hh.png" style="width: 176px; padding-top: 18px; padding-left: 12px;" />
+        </div>
+        <ul class="u">
+
+
+            <li style="height:53px" v-show="zj">
+                <a>
+                    <img src="~/images/wu.jpg" class="img">
+                </a>
+
+            </li>
+            <li style="height: 33px;" v-on:click="gb">
+                <a>
+
+                    <img src="~/images/关闭.png" class="img1" />
+                </a>
+
+            </li>
+        </ul>
+        <div id="dd">
+            @s.U_name 
+            (@s.RolesName)
+        </div>
+       
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            zj: true,
+        },
+        methods: {
+            fill() {
+              
+            },
+          
+            gb() {
+                if (confirm("你确定要退出该系统嘛？") == true) {
+                    parent.location.href = '/Home/View1';
+                }
+            },
+
+        },
+        mounted: function () {
+         
+        },
+
+    })
+</script>

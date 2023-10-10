@@ -1,0 +1,121 @@
+﻿using DAO;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.UI.WebControls;
+
+namespace WebApplication1.Controllers 
+{
+    public class RecruitController : Controller
+    {
+
+        //一级机构设置
+        CFFKDAO cf = new CFFKDAO();
+        //二级机构设置
+        CFSKDAO sk = new CFSKDAO();
+        //三级机构设置
+        CFTKDAO tk = new CFTKDAO();
+        //职位设置
+        ConfigMajorDao cd = new ConfigMajorDao();
+        //职位分类设置
+        ConfigMajorKindDao kd = new ConfigMajorKindDao();
+        //公共属性设置
+        ConfigPublicCharDao cp = new ConfigPublicCharDao();
+        //职位发布登记
+        EngageMajorReleaseDao ed = new EngageMajorReleaseDao();
+        // GET: Recruit
+        /// <summary>
+        /// 打开职位发布登记
+        /// </summary>
+        /// <returns></returns>
+        //public ActionResult PositionRegister()
+        //{
+        //    PositionRegisterAsync();
+        //    return View();
+        //}
+        public async Task<ActionResult> PositionRegister()
+        {
+            ViewBag.s = await cf.FirstSelectAsync();
+            ViewBag.ss = await sk.SecondSelectAsync();
+            ViewBag.sss = await tk.ThirdSelectAsync();
+            ViewBag.ssss = await cd.CMSelectAsync();
+            ViewBag.sssss = await kd.CMKSelectAsync();
+            return View();
+        }
+        /// <summary>
+        /// 提交职位发布登记
+        /// </summary>
+        /// <param name="em"></param>
+        /// <returns></returns>
+        public async Task<int> EMAdd(EngageMajorRelease em)
+        {
+            return await ed.EMRInsertAsync(em);
+        }
+        /// <summary>
+        /// 打开职位发布变更
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PositionChangeUpdate()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 查询职位发布变更
+        /// </summary>
+        /// <param name="em"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> FenYe(FenYe<EngageMajorRelease> em)
+        {
+            em = await ed.EMRSelectAsync(em);
+            return Json(em, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 打开修改
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> PositionReleaseChange(int id)
+        {
+            ViewBag.s = await ed.EMRSelectIdAsync(id);
+            return View();
+        }
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<int> EMDelete(int id)
+        {
+            return await ed.EMRDeleteAsync(id);
+        }
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="em"></param>
+        /// <returns></returns>
+        public async Task<int> EMDUpdate(EngageMajorRelease em)
+        {
+            return await ed.EMRUpdateAsync(em);
+        }
+        /// <summary>
+        /// 打开职位发布查询
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PositionReleaseSearch()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 打开简历登记
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Register()
+        {
+            return View();
+        }
+    }
+}

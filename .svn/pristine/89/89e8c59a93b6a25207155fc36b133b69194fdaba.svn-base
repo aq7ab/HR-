@@ -1,0 +1,105 @@
+﻿
+using Dapper;
+using Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAO
+{
+    public class ConfigPublicCharDao
+    {
+        //连接字符串
+        string str = "Data Source=.;Initial Catalog=HR_DB;Integrated Security=True";
+        /// <summary>
+        /// 查询公共属性设置
+        /// </summary>
+        /// <returns></returns>
+        //public async Task<IEnumerable<ConfigPublicChar>> CPCSelectAsync()
+        //{
+        //    using (SqlConnection con = new SqlConnection(str))
+        //    {
+        //        string sql = "select * from config_public_char";
+        //        return await con.QueryAsync<ConfigPublicChar>(sql);
+        //    }
+        //}
+        public async Task<FenYe<ConfigPublicChar>> CPCSelectAsync(FenYe<ConfigPublicChar> fc)
+        {
+            using(SqlConnection con = new SqlConnection(str))
+            {
+                DynamicParameters dd = new DynamicParameters();
+                dd.Add("@pageSize", fc.PageSize);
+                dd.Add("@keyName", "pbc_id");
+                dd.Add("@tableName", "config_public_char");
+                dd.Add("@currentPage", fc.CurrentPage);
+                dd.Add("@row", direction: ParameterDirection.Output, dbType: DbType.Int32);
+                string sql = "exec [dbo].[FenYe] @pageSize, @keyName, @tableName, @currentPage, @row out";
+                fc.List = await con.QueryAsync<ConfigPublicChar>(sql, dd);
+                fc.Rows = dd.Get<int>("row");
+                return fc;
+            }
+        }
+        /// <summary>
+        /// 查询职称设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<ConfigPublicChar>> ZCSelectAsync()
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = "select * from config_public_char where attribute_kind = '职称'";
+                return await con.QueryAsync<ConfigPublicChar>(sql);
+            }
+        }
+        /// <summary>
+        /// 查询薪酬设置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<ConfigPublicChar>> XCSelectAsync()
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = "select * from config_public_char where attribute_kind = '薪酬设置'";
+                return await con.QueryAsync<ConfigPublicChar>(sql);
+            }
+        }
+        /// <summary>
+        /// 添加公共属性设置
+        /// </summary>
+        /// <param name="cp"></param>
+        /// <returns></returns>
+        public async Task<int> CPCInsertAsync(ConfigPublicChar cp)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"insert into config_public_char(attribute_kind,attribute_name) values('{cp.attribute_kind}','{cp.attribute_name}')";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        public async Task<int> XCInsertAsync(ConfigPublicChar cp)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"insert into config_public_char(attribute_kind,attribute_name) values('薪酬设置','{cp.attribute_name}')";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+        /// <summary>
+        /// 删除公共属性设置
+        /// </summary>
+        /// <param name="cp"></param>
+        /// <returns></returns>
+        public async Task<int> CPCDeleteAsync(ConfigPublicChar cp)
+        {
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                string sql = $@"delete from config_public_char where pbc_id = '{cp.pbc_id}'";
+                return await con.ExecuteAsync(sql);
+            }
+        }
+    }
+}

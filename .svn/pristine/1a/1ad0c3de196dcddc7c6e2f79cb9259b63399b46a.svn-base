@@ -1,0 +1,170 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>My JSP 'position_release_search.jsp' starting page</title>
+    <link rel="stylesheet"
+          href="../../../css/table.css" type="text/css">
+    <link rel="stylesheet"
+          href="../../../css/cwcalendar.css" type="text/css">
+    <script type="text/javascript"
+            src="../../../javascript/comm/comm.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/list.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/calendar-ch.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/locate.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/select.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #D4F8D4;
+        }
+
+        .TD_STYLE2 {
+            background-color: #D4F8D4 !important;
+        }
+
+        .TD_STYLE1 {
+            background-color: #D4F8D4 !important;
+        }
+
+        .TABLE_STYLE1 {
+            background-color: #D4F8D4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <table width="100%">
+            <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                <el-breadcrumb-item><a href="#">招聘管理</a></el-breadcrumb-item>
+                <el-breadcrumb-item><a href="#">职位发布管理</a></el-breadcrumb-item>
+                <el-breadcrumb-item>职位发布查询</el-breadcrumb-item>
+            </el-breadcrumb>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+        <el-table :data="table"
+                  stripe
+                  style="width: 100%">
+            <el-table-column prop="major_name"
+                             label="职位名称">
+            </el-table-column>
+            <el-table-column prop="second_kind_name"
+                             label="机构名称">
+            </el-table-column>
+            <el-table-column prop="human_amount"
+                             label="招聘人数">
+            </el-table-column>
+            <el-table-column prop="regist_time"
+                             label="发布时间">
+                <template slot-scope="scope">
+                    {{scope.row.regist_time | ftime}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="deadline"
+                             label="截止时间">
+                <template slot-scope="scope">
+                    {{scope.row.deadline | ftime}}
+                </template>
+            </el-table-column>
+            <el-table-column label="申请职位">
+                <template slot-scope="scope">
+                    <el-button size="mini"
+                               v-on:click="xg(scope.row)">申请该职位</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-pagination v-on:size-change="handleSizeChange"
+                       v-on:current-change="handleCurrentChange"
+                       :current-page="currentPage"
+                       :page-sizes="[3, 6, 9, 12]"
+                       :page-size="pageSize"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="row">
+        </el-pagination>
+        <p>
+    </div>
+
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                table: [],
+                currentPage: 1,
+                pageSize: 3,
+                row: 1,
+            },
+            methods: {
+                fill: function () {
+                    axios.get('/Recruit/FenYe', {
+                        params: {
+                            CurrentPage: this.currentPage,
+                            PageSize: this.pageSize,
+                            tj:"1=1"
+                        }
+                    })
+                        .then(res => {
+                            this.table = res.data.List;
+                            this.row = res.data.Rows;
+                            console.log(res)
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                },
+                handleSizeChange: function (size) {
+
+                    this.pageSize = size;
+                    this.currentPage = 1;
+                    this.fill();
+                },
+                handleCurrentChange: function (cpage) {
+                    this.currentPage = cpage;
+                    this.fill();
+                },
+                xg: function (id) {
+                    console.log(id);
+                    location.href = '/Recruit/Register?fl=' + id.major_kind_name + '&mc=' + id.major_name
+                },
+            },
+            mounted: function () {
+                this.fill();
+            },
+            //时间格式
+            filters: {
+                ftime: function (value, spe) {
+
+                    var dt = new Date(value);
+                    return dt.getFullYear() + "年" + (dt.getMonth() + 1) + "月" + dt.getDate() + "日";
+                }
+            }
+        })
+    </script>
+</body>
+</html>

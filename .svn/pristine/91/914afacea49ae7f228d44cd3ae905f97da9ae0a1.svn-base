@@ -1,0 +1,900 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>My JSP 'resume-list.jsp' starting page</title>
+    <link rel="stylesheet"
+          href="../../../css/table.css" type="text/css">
+    <link rel="stylesheet"
+          href="../../../css/cwcalendar.css" type="text/css">
+    <script type="text/javascript"
+            src="../../../javascript/comm/comm.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/comm/list.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/calendar-ch.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/jquery-1.7.2.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/locate.js">
+    </script>
+    <script type="text/javascript"
+            src="../../../javascript/select.js">
+    </script>
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <style>
+        body {
+            background-color: #F1F2F7;
+        }
+
+        .TD_STYLE1 {
+            background-color: #c0c4cc;
+            padding-left: 27px;
+        }
+
+        .TD_STYLE2 {
+            background-color: #F1F2F7;
+        }
+
+        .INPUT_STYLE2 {
+            background-color: #F1F2F7;
+        }
+
+        .INPUT_STYLE1 {
+            background-color: #F1F2F7;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = check;
+        function tick() {
+            var now = new Date();
+            var hours, minutes, seconds, noon;
+            var intHours, intMinutes, intSeconds;
+            intHours = now.getHours();
+            intMinutes = now.getMinutes();
+            intSeconds = now.getSeconds();
+            if (intHours < 24) {
+                hours = intHours + ":";
+                noon = "A.M.";
+            } else {
+                intHours = intHours - 24;
+                hours = intHours + ":";
+                noon = "P.M.";
+            }
+            if (intMinutes < 10) {
+                minutes = "0" + intMinutes + ":";
+            } else {
+                minutes = intMinutes + ":";
+            }
+            if (intSeconds < 10) {
+                seconds = "0" + intSeconds + " ";
+            } else {
+                seconds = intSeconds + " ";
+            }
+            timeString = hours + minutes + seconds;
+            var now = new Date();
+            document.getElementById("nowTime").value = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " " + timeString;
+            window.setTimeout("tick();", 1000);
+        }
+
+        //load事件
+        function check() {
+            //获得系统当前时间的方法
+            tick();
+        }
+    </script>
+    <script type="text/javascript">
+
+
+        function toPhoto(data) {
+            var a = data.substring(data.indexOf(".") + 1)
+            if (a != "jpg" && a != "gif" && a != "bmp") {
+                alert("您上传的不是图片路径");
+            }
+        }
+
+        function toPhotofile(da) {
+            var a = da.substring(da.indexOf(".") + 1)
+            if (a != "doc") {
+                alert("您上传的不是文件路径");
+            }
+        }
+
+        var validateMsg = "";
+        function checkNotEmpty(ctlName, label) {
+            var oCtl = document.forms[0].elements[ctlName];
+            if (oCtl.value == "") {
+                if (label) {
+                    validateMsg += label;
+                }
+                validateMsg += "不能为空！\n";
+                oCtl.focus();
+            }
+        }
+
+        function checkValidateMsg() {
+            if (validateMsg != "") {
+                alert(validateMsg);
+                return false;
+            }
+            return true;
+        }
+
+        function tosubmit() {
+            validateMsg = "";
+            checkNotEmpty("ei.checker", "筛选人");
+            checkNotEmpty("ei.checkComment", "录用申请审核意见");
+            if (!checkValidateMsg()) {
+                return;
+            }
+            document.forms[0].elements["operate"].value = "doAdopt";
+            document.forms[0].submit();
+        }
+
+
+        function tozwfenlei(id) {
+            $("er.humanMajorKindName").value = $("er.humanMajorKindId").options[$("er.humanMajorKindId").selectedIndex].outerText;
+            engageResume.SelectConfig_major(id, callbackkind)
+        }
+
+        function callbackkind(data) {
+            $("er.humanMajorId").options.length = 0;
+            var o = new Option("--请选择--", 0);
+            $("er.humanMajorId").add(o);
+            DWRUtil.addOptions("er.humanMajorId", data, "majorId", "majorName");
+        }
+        function zwmingchen() {
+            $("er.humanMajorName").value = $("er.humanMajorId").options[$("er.humanMajorId").selectedIndex].outerText;
+        }
+
+
+
+        function mians() {
+            document.getElementById("passCheckcomment").value = "建议面试";
+
+        }
+        function bis() {
+            document.getElementById("passCheckcomment").value = "建议笔试";
+        }
+        function luy() {
+            document.getElementById("passCheckcomment").value = "建议录用";
+
+        }
+        function del() {
+            document.getElementById("passCheckcomment").value = "删除简历";
+
+        }
+
+    </script>
+    <script type="text/javascript">
+        function search(id) {
+            if (document.getElementById("passCheckcomment").value == "删除简历") {
+                //	window.location.href="/HR_Fist/recruit/recruitAction!deleteResumeById?id="+id;
+                document.fm.submit();
+            } else if (document.getElementById("passCheckcomment").value == "建议录用") {
+                document.getElementById("ly").value = true;
+                document.fm.submit();
+            } else if (document.getElementById("passCheckcomment").value == "建议面试") {
+                document.getElementById("mianshi").value = false;
+                document.fm.submit();
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        @{ Models.EngageResume ei = ViewBag.i;}
+        <el-form ref="form" :model="engageInterview" :rules="rules">
+            <table width="100%">
+                <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                    <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">招聘管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item><a href="#">面试管理</a></el-breadcrumb-item>
+                    <el-breadcrumb-item>面试筛选</el-breadcrumb-item>
+                </el-breadcrumb>
+                <tr>
+                    <td align="right">
+                        <input type="radio" name="ei.result" value="建议面试" v-on:click="mians()">建议面试
+                        <input type="radio" name="ei.result" value="建议笔试" v-on:click="bis()">建议笔试
+                        <input type="radio" name="ei.result" value="建议录用" checked="checked" v-on:click="luy()">建议录用
+                        <input type="radio" name="ei.result" value="删除简历" v-on:click="del()">删除简历
+                        @*<el-button size="mini"
+                                   v-on:click="dj()"
+                                   style="color: #fff; background: #303133; ">确定</el-button>*@
+                        <input type="button" value="确定" class="BUTTON_STYLE1"
+                               v-on:click="dj">
+                        <input type="button" value="返回" class="BUTTON_STYLE1"
+                               onclick=history.back();>
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td class="TD_STYLE1">
+                        职位分类
+                    </td>
+                    <td class="TD_STYLE2">
+
+                        <el-form-item prop="fl">
+                            <el-input v-model="engageInterview.fl" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        职位名称
+                    </td>
+                    <td class="TD_STYLE2" width="20%">
+                        <el-form-item prop="zw">
+                            <el-input v-model="engageInterview.zw" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td width="11%" class="TD_STYLE1">
+                        招聘类型
+                    </td>
+                    <td class="TD_STYLE2" colspan="2">
+                        <el-form-item prop="lx">
+                            <el-input v-model="engageInterview.lx" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td rowspan="6" width="13%" style="text-align: center;">
+                        &nbsp;
+                        <img src="~/Uploaders/@ViewBag.o" style="width: 200px; height: 250px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        姓名
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="xm">
+                            <el-input v-model="engageInterview.xm" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        性别
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="xb">
+                            <el-input v-model="engageInterview.xb" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        EMAIL
+                    </td>
+                    <td colspan="2" class="TD_STYLE2">
+                        <el-form-item prop="yx">
+                            <el-input v-model="engageInterview.yx" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        电话
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="dh">
+                            <el-input v-model="engageInterview.dh" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        家庭电话
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="jt">
+                            <el-input v-model="engageInterview.jt" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        手机
+                    </td>
+                    <td colspan="2" class="TD_STYLE2">
+                        <el-form-item prop="sj">
+                            <el-input v-model="engageInterview.sj" disabled></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        住址
+                    </td>
+                    <td colspan="3" class="TD_STYLE2">
+                        <el-form-item prop="zz">
+                            <el-input v-model="engageInterview.zz" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                    <td class="TD_STYLE1">
+                        邮编
+                    </td>
+                    <td colspan="2" class="TD_STYLE2">
+                        <el-form-item prop="yb">
+                            <el-input v-model="engageInterview.yb" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="TD_STYLE1">
+                        国籍
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="gj">
+                            <el-input v-model="engageInterview.gj" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        出生地
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="cs">
+                            <el-input v-model="engageInterview.cs" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        生日
+                    </td>
+                    <td width="13%" colspan="2" class="TD_STYLE2">
+                        <el-form-item prop="sr">
+                            <el-input v-model="engageInterview.sr" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td width="11%" class="TD_STYLE1">
+                        民族
+                    </td>
+                    <td class="TD_STYLE2" width="14%">
+                        <el-form-item prop="mz">
+                            <el-input v-model="engageInterview.mz" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        宗教信仰
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="xy">
+                            <el-input v-model="engageInterview.xy" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        政治面貌
+                    </td>
+                    <td class="TD_STYLE2" colspan="2">
+                        <el-form-item prop="mm">
+                            <el-input v-model="engageInterview.mm" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        身份证号码
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="sf">
+                            <el-input v-model="engageInterview.sf" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        年龄
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="nl">
+                            <el-input v-model="engageInterview.nl" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        毕业院校
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="by">
+                            <el-input v-model="engageInterview.by" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                    <td class="TD_STYLE1">
+                        学历
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="xl">
+                            <el-input v-model="engageInterview.xl" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        教育年限
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="jy">
+                            <el-input v-model="engageInterview.jy" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        学历专业
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="zy">
+                            <el-input v-model="engageInterview.zy" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                    <td class="TD_STYLE1">
+                        薪酬要求
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="yq">
+                            <el-input v-model="engageInterview.yq" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        注册时间
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="zc">
+                            <el-input v-model="engageInterview.zc" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td class="TD_STYLE1">
+                        特长
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="tc">
+                            <el-input v-model="engageInterview.tc" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        爱好
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="ah">
+                            <el-input v-model="engageInterview.ah" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        推荐人
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="tj">
+                            <el-input v-model="engageInterview.tj" readonly="readonly"></el-input>
+                        </el-form-item>
+
+                    </td>
+                    <td class="TD_STYLE1">
+                        推荐时间
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="ts">
+                            <el-input v-model="engageInterview.ts" readonly="readonly"></el-input>
+                        </el-form-item>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        个人履历
+                    </td>
+                    <td colspan="7" class="TD_STYLE2">
+                        <el-form-item prop="ll">
+                            <el-input v-model="engageInterview.ll" type="textarea" rows="4" class="TEXTAREA_STYLE1" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="TD_STYLE1">
+                        备注
+                    </td>
+                    <td colspan="7" class="TD_STYLE2">
+                        <el-form-item prop="bz">
+                            <el-input v-model="engageInterview.bz" type="textarea" rows="4" class="TEXTAREA_STYLE1" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        推荐意见
+                    </td>
+                    <td colspan="7" class="TD_STYLE2">
+                        <el-form-item prop="yj">
+                            <el-input v-model="engageInterview.yj" type="textarea" rows="4" class="TEXTAREA_STYLE1" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        面试次数
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="interviewAmount">
+                            <el-input v-model="engageInterview.interviewAmount" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        形象评价
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="imageDegree">
+                            <el-input v-model="engageInterview.imageDegree" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        口才评价
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="nativeLanguageDegree">
+                            <el-input v-model="engageInterview.nativeLanguageDegree" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        外语口语能力
+                    </td>
+                    <td class="TD_STYLE1">
+                        <el-form-item prop="foreignLanguageDegree">
+                            <el-input v-model="engageInterview.foreignLanguageDegree" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        应变能力
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="responseSpeedDegree">
+                            <el-input v-model="engageInterview.responseSpeedDegree" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        EQ
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="eqDegree">
+                            <el-input v-model="engageInterview.eqDegree" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        IQ
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="iqDegree">
+                            <el-input v-model="engageInterview.iqDegree" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        综合素质
+                    </td>
+                    <td class="TD_STYLE1">
+                        <el-form-item prop="multiQualityDegree">
+                            <el-input v-model="engageInterview.multiQualityDegree" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        面试人
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="register">
+                            <el-input v-model="engageInterview.register" readonly="readonly"></el-input>
+                        </el-form-item>
+                    </td>
+                    <td class="TD_STYLE1">
+                        面试时间
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-form-item prop="registeTime">
+                            <el-input v-model="engageInterview.registeTime" readonly="readonly"></el-input>
+                        </el-form-item>
+                        @*<el-input type="text" v-model="engageInterview.registeTime"
+                                  id="nowTime" readonly="readonly"
+                                  class="INPUT_STYLE2">*@
+
+                    </td>
+                    <td class="TD_STYLE1">
+                        筛选人
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-input type="text" v-model="engageInterview.checker" value="zhangsan" class="INPUT_STYLE2" />
+
+                    </td>
+                    <td class="TD_STYLE1">
+                        筛选时间
+                    </td>
+                    <td class="TD_STYLE2">
+                        <el-input type="text" v-model="engageInterview.checkTime"
+                               id="nowTime" readonly="readonly"
+                               class="INPUT_STYLE2">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1">
+                        录用申请审核意见
+                    </td>
+                    <td class="TD_STYLE2" colspan="7">
+                        <el-form-item prop="passCheckcomment">
+                            <el-input v-model="engageInterview.passCheckcomment" type="textarea" id="passCheckcomment" rows="4" class="TEXTAREA_STYLE1"></el-input>
+                        </el-form-item>
+                        @*<textarea name="engageResume.passCheckcomment" class="TEXTAREA_STYLE1"
+                                  rows="4" readonly="readonly" id="passCheckcomment">建议录用</textarea>*@
+                    </td>
+                </tr>
+            </table>
+        </el-form>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                engageInterview: {
+                    fl: "",
+                    zw: "",
+                    lx: "",
+                    xm: "",
+                    xb: "",
+                    yx: "",
+                    dh: "",
+                    sj: "",
+                    zz: "",
+                    yb: "",
+                    gj: "",
+                    cs: "",
+                    sr: "",
+                    mz: "",
+                    xy: "",
+                    mm: "",
+                    sf: "",
+                    nl: "",
+                    by: "",
+                    xl: "",
+                    jy: "",
+                    zy: "",
+                    aq: "",
+                    zc: "",
+                    tc: "",
+                    ah: "",
+                    tj: "",
+                    ts: "",
+                    ll: "",
+                    bz: "",
+                    yj: "",
+                    yq: "",
+                    id: "",
+                    ii: "",
+                    interviewAmount: "1",
+                    imageDegree: "",
+                    nativeLanguageDegree: "",
+                    foreignLanguageDegree: "",
+                    responseSpeedDegree: "",
+                    eqDegree: "",
+                    iqDegree: "",
+                    multiQualityDegree: "",
+                    register: "",
+                    registeTime: "",
+                    interviewComment: "",
+                    checker: "",
+                    checkTime: "",
+                    passCheckcomment: "建议录用",
+                },
+                options1: [{
+                    value: 'A',
+                    label: 'A'
+                }, {
+                    value: 'B',
+                    label: 'B'
+                }, {
+                    value: 'C',
+                    label: 'C'
+                },],
+                rules: {}
+            },
+            methods: {
+                fill: function () {
+                    this.engageInterview.fl = @Html.Raw(Json.Encode(ei.human_major_kind_name));
+                    this.engageInterview.zw = @Html.Raw(Json.Encode(ei.human_major_name));
+                    this.engageInterview.lx = @Html.Raw(Json.Encode(ei.engage_type));
+                    this.engageInterview.xm = @Html.Raw(Json.Encode(ei.human_name));
+                    this.engageInterview.xb = @Html.Raw(Json.Encode(ei.human_sex));
+                    this.engageInterview.yx = @Html.Raw(Json.Encode(ei.human_email));
+                    this.engageInterview.jt = @Html.Raw(Json.Encode(ei.human_homephone));
+                    this.engageInterview.dh = @Html.Raw(Json.Encode(ei.human_telephone));
+                    this.engageInterview.sj = @Html.Raw(Json.Encode(ei.human_mobilephone));
+                    this.engageInterview.zz = @Html.Raw(Json.Encode(ei.human_address));
+                    this.engageInterview.yb = @Html.Raw(Json.Encode(ei.human_postcode));
+                    this.engageInterview.gj = @Html.Raw(Json.Encode(ei.human_nationality));
+                    this.engageInterview.cs = @Html.Raw(Json.Encode(ei.human_birthplace));
+                    this.engageInterview.sr = @Html.Raw(Json.Encode(ei.human_birthday));
+                    this.engageInterview.mz = @Html.Raw(Json.Encode(ei.human_race));
+                    this.engageInterview.xy = @Html.Raw(Json.Encode(ei.human_religion));
+                    this.engageInterview.mm = @Html.Raw(Json.Encode(ei.human_party));
+                    this.engageInterview.sf = @Html.Raw(Json.Encode(ei.human_idcard));
+                    this.engageInterview.nl = @Html.Raw(Json.Encode(ei.human_age));
+                    this.engageInterview.by = @Html.Raw(Json.Encode(ei.human_college));
+                    this.engageInterview.xl = @Html.Raw(Json.Encode(ei.human_educated_degree));
+                    this.engageInterview.jy = @Html.Raw(Json.Encode(ei.human_educated_years));
+                    this.engageInterview.zy = @Html.Raw(Json.Encode(ei.human_educated_major));
+                    this.engageInterview.yq = @Html.Raw(Json.Encode(ei.demand_salary_standard));
+                    this.engageInterview.zc = @Html.Raw(Json.Encode(ei.regist_time));
+                    this.engageInterview.tc = @Html.Raw(Json.Encode(ei.human_specility));
+                    this.engageInterview.ah = @Html.Raw(Json.Encode(ei.human_hobby));
+                    this.engageInterview.tj = @Html.Raw(Json.Encode(ei.checker));
+                    this.engageInterview.ts = @Html.Raw(Json.Encode(ei.check_time));
+                    this.engageInterview.ll = @Html.Raw(Json.Encode(ei.human_history_records));
+                    this.engageInterview.bz = @Html.Raw(Json.Encode(ei.remark));
+                    this.engageInterview.yj = @Html.Raw(Json.Encode(ei.recomandation));
+                    this.engageInterview.id = @Html.Raw(Json.Encode(ei.res_id));
+                    this.engageInterview.ii = @Html.Raw(Json.Encode(ei.ein_id));
+                    this.engageInterview.imageDegree = @Html.Raw(Json.Encode(ei.image_degree));
+                    this.engageInterview.nativeLanguageDegree = @Html.Raw(Json.Encode(ei.native_language_degree));
+                    this.engageInterview.foreignLanguageDegree = @Html.Raw(Json.Encode(ei.foreign_language_degree));
+                    this.engageInterview.responseSpeedDegree = @Html.Raw(Json.Encode(ei.response_speed_degree));
+                    this.engageInterview.eqDegree = @Html.Raw(Json.Encode(ei.EQ_degree));
+                    this.engageInterview.iqDegree = @Html.Raw(Json.Encode(ei.IQ_degree));
+                    this.engageInterview.multiQualityDegree = @Html.Raw(Json.Encode(ei.multi_quality_degree));
+                    this.engageInterview.register = @Html.Raw(Json.Encode(ei.register));
+                    this.engageInterview.registeTime = @Html.Raw(Json.Encode(ei.registe_time));
+                },
+                dj: function (id) {
+                    var t = this;
+                    var oo = document.getElementById("nowTime").value;
+                    var re = document.getElementsByName("ei.result");
+                    if (re[3].checked == true) {
+                        //将个人简历删除
+                        this.$confirm('此操作将永久删除该数据，是否继续？', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        })
+                            .then(() => {
+                                axios.get('/Interview/InterviewSift', {
+                                    params: {
+                                        res_id: t.engageInterview.id
+                                    }
+                                })
+                                    .then(res => {
+                                        if (res.data > 0) {
+                                            this.$message({
+                                                type: 'success',
+                                                message: '删除成功！'
+                                            });
+                                            location.href = '/Interview/SiftList'
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    })
+                            }).catch(() => {
+                                this.$message({
+                                    type: 'info',
+                                    message: '已取消删除'
+                                });
+                            })
+                    } else if (re[2].checked == true) {
+                        //在录用筛选列表中显示
+                        t.$refs.form.validate(valid => {
+                            if (valid) {
+                                axios.get('/Interview/EIUpdate', {
+                                    params: {
+                                        checker: this.engageInterview.checker,
+                                        check_time: oo,
+                                        res_id: this.engageInterview.id,
+                                        ein_id: this.engageInterview.ii,
+                                        pass_checkComment: this.engageInterview.passCheckcomment,
+                                    }
+                                })
+                                    .then(res => {
+                                        if (res.data > 0) {
+                                            alert("登记成功！")
+                                            location.href = '/Interview/SiftList'
+                                        } else {
+                                            alert("失败！")
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    })
+                            } else {
+                                alert("请填写完整信息！")
+                            }
+                        })
+                    } else if (re[1].checked == true) {
+                        //状态改为未面试
+                        t.$refs.form.validate(valid => {
+                            if (valid) {
+                                axios.get('/Interview/EIUpdate', {
+                                    params: {
+                                        checker: this.engageInterview.checker,
+                                        check_time: oo,
+                                        res_id: this.engageInterview.id,
+                                        ein_id: this.engageInterview.ii,
+                                        pass_checkComment: this.engageInterview.passCheckcomment,
+                                    }
+                                })
+                                    .then(res => {
+                                        if (res.data > 0) {
+                                            alert("登记成功！")
+                                            location.href = '/Interview/CheckList'
+                                        } else {
+                                            alert("失败！")
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    })
+                            } else {
+                                alert("请填写完整信息！")
+                            }
+                        })
+                    } else if (re[0].checked == true) {
+                        t.$refs.form.validate(valid => {
+                            if (valid) {
+                                axios.get('/Interview/EIUpdate', {
+                                    params: {
+                                        checker: this.engageInterview.checker,
+                                        check_time: oo,
+                                        res_id: this.engageInterview.id,
+                                        ein_id: this.engageInterview.ii,
+                                        pass_checkComment: this.engageInterview.passCheckcomment,
+                                    }
+                                })
+                                    .then(res => {
+                                        if (res.data > 0) {
+                                            alert("登记成功！")
+                                            location.href = '/Interview/SiftList'
+                                        } else {
+                                            alert("失败！")
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    })
+                            } else {
+                                alert("请填写完整信息！")
+                            }
+                        })
+                    }
+                },
+                mians: function () {
+                    this.engageInterview.passCheckcomment = "建议面试";
+                },
+                bis: function () {
+                    this.engageInterview.passCheckcomment = "建议笔试";
+                },
+                luy: function () {
+                    this.engageInterview.passCheckcomment = "建议录用";
+                },
+                del: function () {
+                    this.engageInterview.passCheckcomment = "删除简历";
+                }
+            },
+            mounted: function () {
+                this.fill();
+                this.engageInterview.checker = @Html.Raw(Json.Encode(ViewBag.u.U_name));
+            }
+        })
+    </script>
+</body>
+
+</html>

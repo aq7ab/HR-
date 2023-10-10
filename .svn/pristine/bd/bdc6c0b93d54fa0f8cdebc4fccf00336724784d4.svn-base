@@ -1,0 +1,37 @@
+﻿using DAO;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+
+namespace WebApplication1.Controllers
+{
+    /// <summary>
+    /// 调动管理
+    /// </summary>
+    public class TransferController : Controller
+    {
+        TransferDAO tt=new TransferDAO();
+        // GET: Transfer
+        /// <summary>
+        /// 打开调动登记
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Register_locate()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 选择调动登记机构
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> Xia()
+        {
+            IEnumerable cs = await tt.GetFindAsync();
+            return Json(cs, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

@@ -1,0 +1,62 @@
+﻿using DAO;
+using Models;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+
+namespace WebApplication1.Controllers
+{
+    /// <summary>
+    /// 薪酬标准管理
+    /// </summary>
+    public class SalaryCriterionController : Controller
+    {
+        ConfigPublicCharDao cp = new ConfigPublicCharDao();
+        SSDAO ss =new SSDAO();
+        // GET: SalaryCriterion
+        /// <summary>
+        /// 打开薪酬标准登记
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Salarystandard_register()
+        {
+            User user = (User)Session["user"];
+            ViewBag.u = user;
+            return View();
+        }
+        /// <summary>
+        /// 选择全选
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> Qx()
+        {
+            IEnumerable cs = await cp.XCSelectAsync();
+            return Json(cs, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 编号
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> Bh()
+        {
+           return await ss.BhAsync();
+           
+        }
+        /// <summary>
+        /// 添加
+        /// </summary>
+        /// <param name="bh"></param>
+        /// <param name="name"></param>
+        /// <param name="qian"></param>
+        /// <param name="sc"></param>
+        /// <returns></returns>
+        public async Task<int> Tj(string bh,string name,string qian,SS sc)
+        {
+            return await ss.SSDInsertAsync(bh,name,qian,sc);
+        }
+    }
+}

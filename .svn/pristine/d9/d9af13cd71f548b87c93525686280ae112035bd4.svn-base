@@ -1,0 +1,113 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet"
+          href="../../css/table.css" type="text/css">
+
+    <script src="~/Scripts/vue/dist/vue.js"></script>
+    <script src="~/Scripts/element-ui/lib/index.js"></script>
+    <link href="~/Scripts/element-ui/lib/theme-chalk/index.css" rel="stylesheet" />
+    <script src="~/Scripts/axios/dist/axios.js"></script>
+    <script type="text/javascript"
+            src="../../javascript/comm/comm.js">
+    </script>
+    <style>
+        body {
+            background-color: #F1F2F7;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <table width="100%">
+            
+            <el-breadcrumb separator="/" style="font-size:16px;margin-top:27px">
+                <el-breadcrumb-item :to="{ path: '/' }">人力资源</el-breadcrumb-item>
+                <el-breadcrumb-item><a href="#">客户化设置</a></el-breadcrumb-item>
+                <el-breadcrumb-item><a href="#">人力资源档案管理设置</a></el-breadcrumb-item>
+                <el-breadcrumb-item>职称设置</el-breadcrumb-item>
+            </el-breadcrumb>
+            <tr>
+                <td align="right">
+                </td>
+            </tr>
+        </table>
+        <el-table :data="table"
+                  stripe
+                  style="width: 100%">
+            <el-table-column prop="attribute_name"
+                             label="职称名称">
+            </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button size="mini"
+                               type="danger"
+                               v-on:click="sc(scope.row.pbc_id)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el:"#app",
+            data: {
+                table:[],
+            },
+            methods: {
+                fill: function () {
+                    axios.get('/Cilent/PD')
+                        .then(res => {
+                            this.table = res.data;
+                            console.log(res.data);
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                },
+                sc: function (id) {
+                    this.$confirm('此操作将永久删除该数据，是否继续？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    })
+                        .then(() => {
+                            axios.get('/Cilent/CPCDelete', {
+                                params: {
+                                    pbc_id: id
+                                }
+                            })
+                                .then(res => {
+                                    if (res.data > 0) {
+                                        this.$message({
+                                            type: 'success',
+                                            message: '删除成功！'
+                                        });
+                                        this.fill();
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                        }).catch(() => {
+                            this.$message({
+                                type: 'info',
+                                message: '已取消删除'
+                            });
+                        })
+                    }
+            },
+            mounted: function () {
+                this.fill();
+            }
+        })
+    </script>
+</body>
+</html>
+
